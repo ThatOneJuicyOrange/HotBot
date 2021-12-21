@@ -14,16 +14,13 @@ exports.runTimer = async (client) => {
     let repeatDelay = 20; // in seconds
     setInterval(async function() { 
         seconds += repeatDelay;
-        console.log('20s update')
 
         // every minute
         if (seconds % 60 == 0) {
-            console.log('1m update')
         }
         // every 5 minutes
         if (seconds % 300 == 0) {
             updateWeatherCache();
-            console.log('5m update')
         }
 
         // loop through each user
@@ -47,41 +44,6 @@ exports.runTimer = async (client) => {
 
     }, 1000 * repeatDelay) 
 }
-
-/*exports.timer20Secs = async (Discord, client) => {
-    setInterval(async function() { 
-        // loop through each user
-        creatureUserModel.find({} , (err, users) => {
-            if(err) console.log(err);
-
-            users.map(async user => {
-                await checkEggHatching(client, user);
-                await clearOldBrews(client, user);
-            });
-        });
-
-    }, 1000 * 20) 
-}
-
-exports.timer1Min = async (Discord, client) => {
-    setInterval(async function() { 
-        creatureUserModel.find({} , (err, users) => {
-            if(err) console.log(err);
-
-            users.map(async user => {
-                await updateGardenWater(client, user);
-            });
-        });
-    }, 1000 * 60) 
-}
-
-exports.timer5Mins = async (Discord, client) => {
-    updateWeatherCache(); // run immediately
-
-    setInterval(async function() { 
-        updateWeatherCache();       
-    }, 1000 * 60 * 5) 
-}*/
 
 // creatures
 

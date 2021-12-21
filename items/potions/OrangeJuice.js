@@ -7,6 +7,7 @@ module.exports = {
     duration: 60 * 1000,
     cantBuy: true,
     consumable: true,
+    hideInBook: true,
     updateStats(statObject) { 
         
     }

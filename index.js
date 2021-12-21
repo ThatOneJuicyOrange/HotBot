@@ -7,7 +7,7 @@ const fs = require('fs');
 const ms = require('ms');
 var path = require('path');
 global.appRoot = path.resolve(__dirname);
-
+//color: #331626
 const client = new Discord.Client({
 	partials: ['MESSAGE', 'CHANNEL', 'REACTION'],
 	intents: [
@@ -19,30 +19,19 @@ const client = new Discord.Client({
 		'GUILD_MESSAGE_REACTIONS'
 	]
 });
+//endcolor
 
-// extends Map
+// more collections are defined in itemHandler
 client.commands = new Discord.Collection();
 client.events = new Discord.Collection();
 client.creatures = new Discord.Collection();
 client.fish = new Discord.Collection();
-// more are defined in itemHandler
 
 const handlers = fs.readdirSync('./handlers').filter(file => file.endsWith('.js'));
 for (handler of handlers)
     require(`./handlers/${handler}`)(client, Discord);
 
-/*['commandHandler', 'eventHandler', 'creatureHandler', 'fishHandler', 'itemHandler'].forEach(
-	handler => {
-		require(`./handlers/${handler}`)(client, Discord);
-	}
-);*/
-
 keepAlive();
-
-//functions.checkEggHatching(Discord, client);
-//timerFunctions.timer5Mins(Discord, client);
-//timerFunctions.timer1Min(Discord, client);
-//timerFunctions.timer20Secs(Discord, client);
 
 timerFunctions.runTimer(client);
 

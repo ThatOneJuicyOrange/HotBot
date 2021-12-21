@@ -7,9 +7,30 @@ module.exports = {
     name: 'potionbook',
     description: 'water a plant',
     usage: "!potionbook page",
-    admin: true,
     async execute(client, message, args, Discord){
-        let maxPages =  3;
+        let potionsPerPage = 2;
+        let potionNum = 0;
+        let potions = []
+        let potionTexts = []
+        for (const [name, potion] of client.potions) {
+            if (!potion.hideInBook) {
+                potionNum++;
+                potions.push(name)
+                
+                let potionText = "`description`:\n" + (potion.desc == '' ? `a potion` : potion.desc) + "\n";
+                potionText += "`effect:\n`" + `${potion.effect} for ${new Date(potion.duration).toCountdown()}\n`
+                let steps = potion.steps.split('-');
+                let stepString = "";
+                for (let i = 0; i < steps.length; i++) {
+                    stepString += `**${i + 1}.** ${steps[i]}\n`
+                }
+                
+                potionText += "`method:\n` " + stepString + "\n"
+                potionTexts.push(potionText)
+            }
+        }
+        
+        let maxPages = potionNum / potionsPerPage;
         let page = 1;
         if (!isNaN(parseInt(args[0]))) page = parseInt(args[0]);
         if (page > maxPages) page = maxPages;
@@ -30,28 +51,23 @@ module.exports = {
             else row.addComponents(buttons[i].setDisabled(true))
         }
 
-        const embed1 = new MessageEmbed()
+        let embeds = [];
+        for (let i = 0; i < maxPages; i++) {
+            embeds[i] = new MessageEmbed()
             .setColor('#80ede6')
-            .setTitle("the potion book: page 1")
-            .addField("method", "yeet", true)
-
-        const embed2 = new MessageEmbed()
-            .setColor('#80ede6')
-            .setTitle("the potion book: page 2")
-            .addField("BRUH", "yote", true)
-
-        const embed3 = new MessageEmbed()
-            .setColor('#80ede6')
-            .setTitle("the potion book: page 3")
-            .addField("shheheeh", "aaaaa", true)
-
-        eval(`var embed = embed${page}`); // eval turns a string into js
-
+            .setTitle("the potion book: page " + (i + 1))
+            .addField("commands", "!brew\n!brew add <amount> <plant/fish>\n!brew heat/stir/beat/fold\n!brew complete")
+            for (let j = i * potionsPerPage; j < (i + 1) * potionsPerPage; j++) {
+                if (j > potionNum) break;
+                embeds[i].addField(potions[j], potionTexts[j], true)
+            }
+        }
+      
         let book = await message.channel.send({
-            embeds: [embed], 
+            embeds: [embeds[page - 1]], 
             components: [row]
         });
-        console.log(book);
+
         const filter = (i) => i.user.id === message.author.id;
         const collector = message.channel.createMessageComponentCollector({
             filter,
@@ -65,14 +81,18 @@ module.exports = {
                 else row.addComponents(buttons[i].setDisabled(true))
             }
 
-            eval(`var embed = embed${i.customId}`);
             i.message.edit({
-                embeds: [embed], 
+                embeds: [embeds[i.customId - 1]], 
                 components: [row]
             });
 
             i.deferUpdate(); 
         });   
-        collector.on('end', collected => book.edit({content: "potion book closed", embeds: [], components: []}));   
+        collector.on('end', collected => {
+            const row = new MessageActionRow()
+            for (let i = 0; i < buttons.length; i++) 
+                row.addComponents(buttons[i].setDisabled(true))
+            book.edit({components: [row]})
+        });   
     }
 }   

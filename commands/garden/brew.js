@@ -5,13 +5,13 @@ const functions = require('../../functions.js')
 const { MessageActionRow, MessageButton, MessageEmbed } = require('discord.js');
 
 let heat = ['cold', 'cool', 'lukewarm', 'hot', 'bubbling', 'boiling', 'evaporated']
+const brewSpeed = 5;
 
 module.exports = {
     name: 'brew',
     description: 'brew a potion',
     usage: "!brew add <amount> <plant>"
         + "!brew heat/stir/beat/fold",
-    admin: true,
     async execute(client, message, args, Discord){
         let user = await functions.getUser(message.author.id, message.guild.id);
         if (!user) return message.channel.send("error getting profile :(");
@@ -116,15 +116,15 @@ module.exports = {
 
                     if (!counter) {
                         counter = setInterval(function() {
-                            if (seconds % 10 == 0) {
-                                let index = parseInt(seconds / 10);
+                            if (seconds % brewSpeed == 0) {
+                                let index = parseInt(seconds / brewSpeed);
                                 i.message.edit({
                                     content:`your brew is ${heatEmoji[index]} ${heat[index]}`,
                                     components: [row]
                                 })
                             }
                             seconds++;
-                            if (seconds > 60){
+                            if (seconds > brewSpeed * (heat.length - 1)){
                                 clearInterval(counter);
                                 finishHeating(user,i.message, seconds);
                                 collector.stop();
@@ -178,7 +178,7 @@ module.exports = {
     }
 }   
 function finishHeating(user, msg, seconds) {
-    msg.edit({content: `you heated the brew until it was ${heat[parseInt(seconds / 10)]}`, components: []})
-    user.brew.steps.push(heat[parseInt(seconds / 10)])
+    msg.edit({content: `you heated the brew until it was ${heat[parseInt(seconds / brewSpeed)]}`, components: []})
+    user.brew.steps.push(heat[parseInt(seconds / brewSpeed)])
     user.save();
 }
