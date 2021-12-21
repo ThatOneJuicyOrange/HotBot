@@ -44,6 +44,8 @@ module.exports = {
             if (Date.now() - lastFished > config.fishCD * 1000) {
                 fishCD.set(message.author.id, Date.now());
 
+                //color: #053233
+                // FISH
                 let caughtList = [];
                 const userStats = await functions.getUserStats(client, message.author.id, message.guild.id);
                 if (Math.random() < userStats.fishChance) {           
@@ -61,6 +63,9 @@ module.exports = {
                     let emoji = functions.getEmojiFromName(client, caught);
                     caughtString += `${emoji}${caught}\n`;
                 }
+                //endcolor
+                
+                //color:#331818
                 // CHESTS
                 let chest;
                 if (Math.random() < userStats.chestChance) chest = fishFunctions.chooseChestRewards(client, user, true);
@@ -91,6 +96,7 @@ module.exports = {
                     let chestEmoji = functions.getEmojiFromName(client, "Chest" + chest.chestTier);
                     if (chestString != "") embed.addField(`you found a chest! ${chestEmoji}`, chestString);
                 }
+                //endcolor
 
                 if (bait && bait != "none") { 
                     let emoji = functions.getEmojiFromName(client, bait);
