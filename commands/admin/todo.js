@@ -1,0 +1,15 @@
+var fs = require('fs');
+
+module.exports = {
+    name: 'todo',
+    description: 'add to the todo list',
+    usage: "!todo <what>",
+    admin: true,
+    execute(client, message, args, Discord){
+        fs.appendFile('todo.txt', "-" + args.join(' ') + "\n", function (err) {
+        if (err) throw err;
+        });
+
+        message.delete();
+    }
+}   
