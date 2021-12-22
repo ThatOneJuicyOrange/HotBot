@@ -25,6 +25,7 @@ client.commands = new Discord.Collection();
 client.events = new Discord.Collection();
 client.creatures = new Discord.Collection();
 client.fish = new Discord.Collection();
+client.prefixes = new Discord.Collection();
 
 const handlers = fs.readdirSync('./handlers').filter(file => file.endsWith('.js'));
 for (handler of handlers)

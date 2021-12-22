@@ -1,15 +1,15 @@
-const creatureUserModel = require('../../models/creatureUserSchema');
 const functions = require('../../functions.js')
 const cf = require('../../creatureFunctions.js')
 const fs = require('fs');
 const config = require("../../config.json");
+const guildSettingsModel = require('../../models/guildSettingsSchema');
 
 module.exports = async (Discord, client, message) => {
-    let prefix = "!";
+    let prefix = functions.getPrefix(client, message.guildId);
 
     // record to log 
     //functions.recordMessage(Discord, client, message);
-
+    
     // egg stuff 
     if(!message.author.bot && config.fullAccess.includes(message.guild.id)) cf.checkEgg(Discord, client, message);
 

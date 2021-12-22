@@ -9,7 +9,8 @@ const reqString = {
 const guildSettingsSchema = new mongoose.Schema({
     guildID: reqString,
     settings: {
-        botChannel: { type: String, default: "" }
+        botChannel: { type: String, default: "" },
+        prefix: { type: String, default: "!" }
         }
     })
 

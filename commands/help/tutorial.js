@@ -6,7 +6,7 @@ const f = require('../../functions.js')
 module.exports = {
     name: 'tutorial',
     description: 'get a little tutorial on things',
-    usage: "!tutorial <tutorial>",
+    usage: "%PREFIX%tutorial <tutorial>",
     execute(client, message, args, Discord) {
         if (!args[0]) {         
             const embed = new MessageEmbed()

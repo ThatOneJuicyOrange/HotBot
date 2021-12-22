@@ -9,8 +9,8 @@ const functions = require('../../functions.js')
 module.exports = {
     name: 'garden',
     description: 'view garden',
-    usage: `!garden
-            !garden details`,
+    usage: `%PREFIX%garden\n`
+        + `%PREFIX%garden details`,
     async execute(client, message, args, Discord){
         let user = await functions.getUser( message.author.id, message.guild.id);
         if (!user) return message.channel.send("can't find profile");
@@ -20,7 +20,8 @@ module.exports = {
         user.save();
 
         const userStats = await functions.getUserStats(client, message.author.id, message.guild.id);
-        
+        let growthMultiplier = 1 - (userStats.gardenGrowthRate - 1);
+        let waterMultiplier = 1 + (1 -userStats.gardenWaterNeed);
 
         if (args[0] == "details") {
             let plantList = "";
@@ -30,8 +31,8 @@ module.exports = {
                 let t = "`";
                 plantList += `${t}plot ${i + 1}: ${plant.name}${t}\n`
                 if (plantData) {
-                    waterLevel = Math.clamp(1 - ((Date.now() - plant.lastWatered.getTime()) / (plantData.waterRate * (1 + (1 - userStats.gardenWaterNeed)))),0, 1)
-                    let grownMs = ((plantData.growTime - (Date.now() - plant.planted)) + plant.timeUnwatered) * userStats.gardenGrowthRate;
+                    waterLevel = Math.clamp(1 - ((Date.now() - plant.lastWatered.getTime()) / (plantData.waterRate * waterMultiplier)),0, 1)
+                    let grownMs = ((plantData.growTime - (Date.now() - plant.planted)) + plant.timeUnwatered) * growthMultiplier;
                     let grownTime = new Date(grownMs).toCountdown();
                     if (grownMs < 0) grownTime = "grown!";
 
@@ -42,7 +43,7 @@ module.exports = {
             }
             if (plantList == "") plantList = "error";
 
-            let gardenUpgrades = ["Better Equipment", "Sprinkler"]
+            let gardenUpgrades = ["Better Equipment", "Sprinkler", "Fertilizer"]
             let upgradeList = "";
             for (const upgrade of user.upgrades) {
                 if (!gardenUpgrades.includes(upgrade.name)) continue;
@@ -92,7 +93,7 @@ module.exports = {
                         let barLocX = 8;
                         let barLocY = 38;
 
-                        waterLevel = 1 - ((Date.now() - plant.lastWatered.getTime()) / (plantData.waterRate * (1 + (1 - userStats.gardenWaterNeed))))
+                        waterLevel = 1 - ((Date.now() - plant.lastWatered.getTime()) / (plantData.waterRate * waterMultiplier))
 
                         // bars
                         context.drawImage(bars, plotX + barLocX, plotY + barLocY, 24, 14);
@@ -102,7 +103,7 @@ module.exports = {
                         context.fillRect(plotX + barLocX + 2, plotY + barLocY + 2, waterBarSize, 4);
                         // growth
                         context.fillStyle = '#99e550';
-                        let growthBarSize = Math.clamp(20 * ((((Date.now() - plant.planted) - plant.timeUnwatered) * userStats.gardenGrowthRate) / plantData.growTime),0, 20);
+                        let growthBarSize = Math.clamp(20 * ((((Date.now() - plant.planted) - plant.timeUnwatered) * growthMultiplier) / plantData.growTime),0, 20);
                         context.fillRect(plotX + barLocX + 2, plotY + barLocY + 8, growthBarSize, 4);
                     }
 

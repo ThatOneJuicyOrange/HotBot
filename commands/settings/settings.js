@@ -4,7 +4,7 @@ const { MessageEmbed } = require('discord.js');
 module.exports = {
     name: 'settings',
     description: 'view/change your user settings',
-    usage: "!settings <setting> <value>",
+    usage: "%PREFIX%settings <setting> <value>",
     async execute(client, message, args, Discord){       
         let user = await functions.getUser( message.author.id, message.guild.id);
         if (!user) return message.channel.send("can't find profile");

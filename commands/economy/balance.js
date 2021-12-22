@@ -5,8 +5,8 @@ const functions = require('../../functions.js')
 module.exports = {
     name: 'balance',
     description: 'check how poor you are',
-    usage: "!balance"
-        + "!balance top",
+    usage: "%PREFIX%balance\n"
+        + "%PREFIX%balance top",
     alt: 'flarins',
     async execute(client, message, args, Discord){  
         let flarinEmoji = functions.getEmojiFromName(client, "flarin");

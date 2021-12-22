@@ -1,19 +1,27 @@
 {
   "files": {
+    "commands/admin/butterflytest.js": [
+      {
+        "id": "2ad17a56-d9db-420d-830b-39a4fbfec3da",
+        "line": 79,
+        "version": 695,
+        "index": 3183
+      }
+    ],
     "commands/admin/fishtest.js": [
       {
         "id": "b78d8026-abd4-4a8a-ab46-9b11bc46fc9b",
         "line": 36,
-        "version": 1261,
-        "index": 1766
+        "version": 1262,
+        "index": 1773
       }
     ],
     "commands/garden/harvest.js": [
       {
         "id": "e06753ef-56c6-4bf7-a9ee-60d95ebfb6f0",
-        "line": 39,
-        "version": 795,
-        "index": 1858
+        "line": 41,
+        "version": 844,
+        "index": 1974
       }
     ],
     "events/client/ready.js": [
@@ -36,14 +44,14 @@
       {
         "id": "234e4a23-4870-4af9-bdf4-d295ce8143c9",
         "line": 6,
-        "version": 12210,
+        "version": 12380,
         "index": 353
       },
       {
         "id": "7ef81b8e-4201-4ff4-ba91-fcc13582ce0d",
-        "line": 155,
-        "version": 12210,
-        "index": 5971
+        "line": 199,
+        "version": 12380,
+        "index": 7843
       }
     ],
     "package.json": [
@@ -73,9 +81,9 @@
     "timerFunctions.js": [
       {
         "id": "06be86a1-87d0-4975-b177-1308401af7e8",
-        "line": 54,
-        "version": 461,
-        "index": 1547
+        "line": 100,
+        "version": 803,
+        "index": 3368
       }
     ]
   }

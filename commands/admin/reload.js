@@ -4,7 +4,7 @@ const fs = require('fs');
 module.exports = {
     name: 'reload',
     description: 'reload all commands',
-    usage: "!reload",
+    usage: "%PREFIX%reload",
     admin: true,
     async execute(client, message, args, Discord){
         const handlers = fs.readdirSync(`${global.appRoot}/handlers`).filter(file => file.endsWith('.js'));

@@ -4,7 +4,8 @@ const ical = require('node-ical');
 module.exports = {
     name: 'whereis',
     description: 'find the hotties',
-    usage: "!whereis [name] <day> <time>",
+    usage: "%PREFIX%whereis [name] <day> <time>",
+    hidden: true,
     execute(client, message, args, Discord){       
         var toPrint = '';
 

@@ -1,9 +1,9 @@
 module.exports = {
     name: 'rolldice',
     description: 'roll a dice. default is 6',
-    usage: '!rolldice <sides>\n'
-    + '!rolldice <guess> <sides>\n'
-    + '!rolldice <guess> <sides> <count>\n'
+    usage: '%PREFIX%rolldice <sides>\n'
+    + '%PREFIX%rolldice <guess> <sides>\n'
+    + '%PREFIX%rolldice <guess> <sides> <count>\n'
     + 'you can also switch up argument order by doing arg:x - for example !rolldice count:2 will role 2 six sided die',
     alt: 'rolldie',
     execute(client, message, args, Discord){

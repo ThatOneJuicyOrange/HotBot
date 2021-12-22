@@ -5,7 +5,7 @@ const gardenFunctions = require('../../gardenFunctions.js')
 module.exports = {
     name: 'harvest',
     description: 'harvest a crop!',
-    usage: "!harvest <plot}",
+    usage: "%PREFIX%harvest <plot>",
     async execute(client, message, args, Discord){
        let user = await functions.getUser( message.author.id, message.guild.id);
         if (!user) return message.channel.send("can't find profile");
@@ -23,7 +23,8 @@ module.exports = {
         let plantData = client.plants.get(plant.name);
         if (!plantData) return console.log("couldnt find " + plant.name);
 
-        if ((Date.now() - plant.planted - plant.timeUnwatered) * userStats.gardenGrowthRate < plantData.growTime) {
+        let growthMultiplier = 1 - (userStats.gardenGrowthRate - 1);
+        if ((Date.now() - plant.planted - plant.timeUnwatered) * growthMultiplier < plantData.growTime) {
             const filter = m => m.author.id == message.author.id;
             const collector = new Discord.MessageCollector(message.channel, filter, {
                 max: 1,

@@ -6,7 +6,7 @@ const creatureUserModel = require('../../models/creatureUserSchema');
 module.exports = {
     name: 'weather',
     description: 'get the current weather. useful for finding specific eggs',
-    usage: "!weather",
+    usage: "%PREFIX%weather",
     async execute(client, message, args, Discord){
         const filter = { userID: message.author.id, guildID: message.guild.id }
         let user = await creatureUserModel.findOne(filter);

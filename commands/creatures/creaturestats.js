@@ -5,7 +5,7 @@ const functions = require('../../functions.js')
 module.exports = {
     name: 'creaturestats',
     description: 'get an overview of how many creatures the server has',
-    usage: "!creaturestats <creature>",
+    usage: "%PREFIX%creaturestats <creature>",
     async execute(client, message, args, Discord){
         // for creature specific stats
         if (args[0]) {

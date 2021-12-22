@@ -1,10 +1,10 @@
-const creatureUserModel = require('../../models/creatureUserSchema');
+const functions = require('../../functions.js')
 const { MessageEmbed } = require('discord.js');
 
 module.exports = {
     name: 'bait',
     description: `change the bait you are currently using`,
-    usage: "!bait <name>\n!bait none",
+    usage: "%PREFIX%bait <name>\n%PREFIX%bait none",
     async execute(client, message, args, Discord){  
         let user = await functions.getUser( message.author.id, message.guild.id);
         if (!user) return message.channel.send("can't find profile");

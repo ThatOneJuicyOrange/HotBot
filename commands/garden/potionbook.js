@@ -6,7 +6,7 @@ const { MessageActionRow, MessageButton, MessageEmbed } = require('discord.js');
 module.exports = {
     name: 'potionbook',
     description: 'water a plant',
-    usage: "!potionbook page",
+    usage: "%PREFIX%potionbook page",
     async execute(client, message, args, Discord){
         let potionsPerPage = 2;
         let potionNum = 0;

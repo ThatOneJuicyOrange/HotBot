@@ -1,7 +1,7 @@
 module.exports = {
     name: 'reactionrole',
     description: 'create a message with reactions that add and remove roles',
-    usage: "!reactionrole create <title> <channel id>\n!reactionrole edit <",
+    usage: "%PREFIX%reactionrole create <title> <channel id>\n%PREFIX%reactionrole edit <",
     hidden: true,
     execute(client, message, args, Discord){
         // make embed with title and role name 

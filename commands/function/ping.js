@@ -1,7 +1,7 @@
 module.exports = {
     name: 'ping',
     description: 'ping the bot. may bite',
-    usage: "!ping",
+    usage: "%PREFIX%ping",
     hidden: true,
     execute(client, message, args, Discord){
         message.channel.send('heyya cutie :)');
