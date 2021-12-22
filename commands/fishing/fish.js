@@ -9,8 +9,8 @@ const config = require("../../config.json");
 module.exports = {
     name: 'fish',
     description: `fish. has a ${config.fishCD} second cooldown`,
-    usage: "!fish\n" +
-            "!fish list",
+    usage: "%PREFIX%fish\n" +
+            "%PREFIX%fish list",
     async execute(client, message, args, Discord){  
         let user = await functions.getUser( message.author.id, message.guild.id);
         if (!user) return message.channel.send("can't find profile");

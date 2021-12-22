@@ -6,10 +6,10 @@ const functions = require('../../functions.js')
 module.exports = {
     name: 'trade',
     description: 'create a trade request with someone',
-    usage: "!trade create [user]\n"
-    + "!trade add [message id] [side] [creature name] [count]\n"
-    + "!trade remove [message id] [side] [creature name] [count]\n"
-    + "!trade accept/reject [message id/all]",
+    usage: "%PREFIX%trade create [user]\n"
+    + "%PREFIX%trade add [message id] [side] [creature name] [count]\n"
+    + "%PREFIX%trade remove [message id] [side] [creature name] [count]\n"
+    + "%PREFIX%trade accept/reject [message id/all]",
     async execute(client, message, args, Discord){
         if (args[0] == "create"){
             const recieverID =  args[1].replace(/[\\<>@#&!]/g, "");

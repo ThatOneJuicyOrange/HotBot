@@ -6,8 +6,8 @@ const fishFunctions = require('../../fishFunctions.js')
 module.exports = {
     name: 'sell',
     description: 'sell items',
-    usage: "!sell <item name> [amount]\n"
-        + "!sell fish",
+    usage: "%PREFIX%sell <item name> [amount]\n"
+        + "%PREFIX%sell fish",
     async execute(client, message, args, Discord){  
         let user = await functions.getUser( message.author.id, message.guild.id);
         if (!user) return message.channel.send("can't find profile");

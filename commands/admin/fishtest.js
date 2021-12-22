@@ -6,7 +6,7 @@ const fishFunctions = require('../../fishFunctions.js')
 module.exports = {
     name: 'fishtest',
     description: 'test fish things',
-    usage: "!fishtest [chance] [bias strength] [bonus chance]",
+    usage: "%PREFIX%fishtest [chance] [bias strength] [bonus chance]",
     admin: true,
     async execute(client, message, args, Discord){  
         if (args[0] == "user") {

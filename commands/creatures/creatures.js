@@ -5,7 +5,7 @@ const functions = require('../../functions.js')
 module.exports = {
     name: 'creatures',
     description: 'see what creatures you got',
-    usage: "!creatures <creature>",
+    usage: "%PREFIX%creatures <creature>",
     async execute(client, message, args, Discord){     
         let user = await functions.getUser( message.author.id, message.guild.id);
         if (!user) return message.channel.send("can't find profile");

@@ -3,7 +3,7 @@ var fs = require('fs');
 module.exports = {
     name: 'time',
     description: 'check internal time',
-    usage: "!time",
+    usage: "%PREFIX%time",
     admin: true,
     execute(client, message, args, Discord){
         const time = new Date().addHours(8);

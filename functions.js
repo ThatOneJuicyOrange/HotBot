@@ -122,6 +122,50 @@ var userHasUpgrade = exports.userHasUpgrade = (user, upgradeName) => {
     }
     return false;
 }
+
+exports.chooseButterflyRewards = (client, user, addToUser) => {
+    if (addToUser === undefined) addToUser = true;
+    let itemRewards = [];
+    let flarinReward = 0;
+
+    seeds = new Map();
+    seeds.set("Searcap Seeds", 0.6);
+    seeds.set("Gasbloom Seeds", 0.6);
+    seeds.set("Starlight Spud Seeds", 0.3);
+    seeds.set("Scorchbean Seeds", 0.1);
+
+    baitOptions = new Map();
+    baitOptions.set("Orbide", 1.2);
+    baitOptions.set("Flareworm", 0.6);
+    baitOptions.set("Bloodleech", 0.3);
+    baitOptions.set("Steelshell", 0.2);
+    baitOptions.set("Smokelancer", 0.1);
+    baitOptions.set("Toxicane", 0.1);
+
+    let numRewards = Math.floor(Math.biasedRand(1,6,1,1)) // 1-5 rewards, more likely to get less
+    for (let i = 0; i < numRewards; i++) {
+        let rand = Math.floor(Math.random() * 3);
+        if (rand == 0) {
+            let seedChoice = pickFromWeightedMap(seeds);
+            if (!client.seeds.get(seedChoice)) { console.log(`chest seed ${seedChoice} doesnt exist`); continue; }
+            addThingToUser(itemRewards, seedChoice, 1) // not adding to user, just adding to array
+            if (addToUser) addThingToUser(user.inventory.seeds, seedChoice, 1);
+        }
+        else if (rand == 1) {
+            let baitChoice = pickFromWeightedMap(baitOptions);
+            if (!client.bait.get(baitChoice)) { console.log(`chest bait ${baitChoice} doesnt exist`); continue; }
+            let baitNum = Math.floor(Math.biasedRand(5, 30, 15, 0.8));
+            addThingToUser(itemRewards, baitChoice, baitNum)
+            if (addToUser) addThingToUser(user.inventory.bait, baitChoice, baitNum);
+        }
+        else if (rand == 2){
+            flarinReward += Math.floor(Math.biasedRand(10,500,50,1.5));
+            if (addToUser) user.flarins += flarinReward;
+        }
+    }
+    return { itemRewards: itemRewards, flarinReward: flarinReward};
+}
+
 exports.isRaining = (user) => {
     let rainCaster = false;
     if (user) rainCaster = userHasBoost(user, "Raincaster");
@@ -169,7 +213,7 @@ exports.getEmojiFromName = (client, name) => {
     return emojiToReturn;
 }
 
-exports.pickFromWeightedMap = (map) => {
+var pickFromWeightedMap = exports.pickFromWeightedMap = (map) => {
     if (map.size == 0) { console.log("no options available"); return; }
 
     let weightSum = 0.0;
@@ -231,6 +275,7 @@ var clearFinishedBoosts = exports.clearFinishedBoosts = (client, user) => {
 }
 
 var addThingToUser = exports.addThingToUser = (thingArray, thingName, count) => {
+    count = parseInt(count);
     // check if user has thing
     let thingIndex = -1;
     for (let i = 0; i < thingArray.length; i++){
@@ -249,6 +294,7 @@ var addThingToUser = exports.addThingToUser = (thingArray, thingName, count) => 
 }
 
 var addThingToUser = exports.addThingToUser = (thingArray, thingName, count) => {
+    count = parseInt(count);
     // check if user has thing
     let thingIndex = -1;
     for (let i = 0; i < thingArray.length; i++){
@@ -296,6 +342,11 @@ var sendAlert = exports.sendAlert = async (client, alertContent, guildID) => {
 }
 var saveUser = exports.saveUser = (user) => {
     creatureUserModel.replaceOne({userID: user.userID, guildID: user.guildID}, user)
+}
+
+exports.getPrefix = (client, guildID) => {
+    let prefixCustom = client.prefixes.get(guildID)         
+    return prefixCustom ? prefixCustom : "!";
 }
 
 // https://gist.github.com/endel/dfe6bb2fbe679781948c
@@ -388,6 +439,7 @@ Date.prototype.addHours= function(h){
     return this;
 }
 
+// sorts by value not key
 Map.prototype.sortMap = function() {
     // spread syntax (...) expands map into its values
     // sort returns an array with the key and value as index 0 and 1 respectively

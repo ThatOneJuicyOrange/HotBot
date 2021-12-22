@@ -8,8 +8,8 @@ const db = new Database();
 module.exports = {
     name: 'plan',
     description: 'create a plan',
-    usage: "!plan create [date] [description]\n"
-    + "!plan edit [id] [date] [description]",
+    usage: "%PREFIX%plan create [date] [description]\n"
+    + "%PREFIX%plan edit [id] [date] [description]",
     universal: true,
     async execute(client, message, args, Discord){
         

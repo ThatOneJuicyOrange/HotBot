@@ -4,6 +4,7 @@ const weatherCache = require("./weatherCache.json")
 const fs = require('fs');
 const creatureUserModel = require('./models/creatureUserSchema');
 const functions = require("./functions.js");
+const { MessageActionRow, MessageButton, MessageEmbed } = require('discord.js');
 
 // MAIN TIMERS
 
@@ -45,6 +46,35 @@ exports.runTimer = async (client) => {
     }, 1000 * repeatDelay) 
 }
 
+// butterflies
+function spawnButterfly(client,user){
+    if (Math.random() < 0.05) {
+        const row = new MessageActionRow()
+                .addComponents(
+                    new MessageButton()
+                        .setCustomId('start')
+                        .setEmoji('🦋')
+                        .setLabel('catch butterfly!')
+                        .setStyle('PRIMARY')
+                )
+
+        message.channel.send({
+            content:"a butterfly has appeared", 
+            components: [row]
+            })
+        
+        let usersClicked = [];
+
+        const filter = (i) => !usersClicked.includes(i.user.id)
+        const collector = message.channel.createMessageComponentCollector({
+            filter
+        })
+        collector.on('collect', i => {
+            usersClicked.push(i.user.id);
+            i.reply({ content: "caught it!", ephemeral: true })
+        });
+    }
+}
 // creatures
 
 async function checkEggHatching(client, user){
@@ -64,17 +94,16 @@ async function checkEggHatching(client, user){
                 functions.sendAlert(client, `<@!${user.userID}>! your ${egg.name} has hatched!`, user.guildID) 
             
             // log
-            console.log(`hatched ${user.userID}'s ${egg.name} egg`);
+            let username = client.users.cache().get(user.userID).username;
+            if (!username) username = user.userID;
+            console.log(`hatched ${username}'s ${egg.name} egg`);
             //logCreatureGame(`hatched ${user.userID}'s ${egg.name} egg. they now have\n`);            
         }
     }
     // remove hatched eggs from egg array
-    if (toRemove.length > 0){
-        for (const index of toRemove){
-            if (index > -1) user.eggs.splice(index, 1); // removes 1 element from index
-        }
+    for (let i = toRemove.length - 1; i >= 0; i--){ // go backwards to not mess up indexing
+        if (toRemove[i] > -1) user.eggs.splice(toRemove[i], 1); // removes 1 element from index
     }
-    //user.save(); // save all hatched eggs
 }
 
 // brewing
@@ -85,7 +114,6 @@ function clearOldBrews(client, user) {
         user.brew.steps = [];
         sendAlert(client, `<@!${user.userID}>! your brew has expired D:`, user.guildID) 
     }    
-    //user.save();  
 }
 
 // garden
@@ -96,7 +124,6 @@ async function updateGardenWater(client, user) {
         if (plant.name == "none") continue;
         await gardenFunctions.updatePlantWater(client, user, plant);       
     }
-    //user.save();                      
 }
 
 // weather

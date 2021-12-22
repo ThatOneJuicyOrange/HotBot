@@ -4,7 +4,7 @@ const { MessageEmbed } = require('discord.js');
 module.exports = {
     name: 'fishprob',
     description: 'see the fish probability',
-    usage: "!fishprob <test probability Y/N>",
+    usage: "%PREFIX%fishprob <test probability Y/N>",
     admin: true,
     execute(client, message, args, Discord){
         let fishText = ""

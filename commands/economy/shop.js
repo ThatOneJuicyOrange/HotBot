@@ -5,7 +5,7 @@ const fs = require('fs');
 module.exports = {
     name: 'shop',
     description: 'spend flarins to make yourself feel good',
-    usage: "!shop <page>",
+    usage: "%PREFIX%shop <page>",
     async execute(client, message, args, Discord){  
         let user = await functions.getUser( message.author.id, message.guild.id);
         if (!user) return message.channel.send("can't find profile");

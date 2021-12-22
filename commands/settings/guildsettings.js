@@ -4,10 +4,10 @@ const { MessageEmbed, Permissions  } = require('discord.js');
 module.exports = {
     name: 'guildsettings',
     description: 'view/change your guild settings',
-    usage: "!guildsettings <setting> <value>",
+    usage: "%PREFIX%guildsettings <setting> <value>",
     async execute(client, message, args, Discord){       
         if(!message.member.permissions.has(Permissions.ADMINISTRATOR)) 
-            return message.channel.send("you arent an admin babe");
+            return message.channel.send("you arent an admin :(");
 
         let guild;
         try {
@@ -19,7 +19,6 @@ module.exports = {
                 guild = await guildSettingsModel.create({
                     guildID: message.guild.id
                 });
-                guild.save();
             }
         }
         catch (err) { console.log(err); }
@@ -41,7 +40,9 @@ module.exports = {
                 }
                 if (typeof guild.settings[args[0]] == "string") 
                     guild.settings[args[0]] = args[1];
-                guild.save();
+
+                if (args[0] == "prefix") 
+                    client.prefixes.set(message.guildId,args[1])         
 
                 message.channel.send(args[0] + " updated to " + args[1])
             }
@@ -67,5 +68,6 @@ module.exports = {
                 .addField("settings", settingsText, true);
             message.channel.send({embeds: [embed]});
         }
+        guild.save();
     }
 }

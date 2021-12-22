@@ -45,7 +45,7 @@ async function checkEgg(Discord, client, message) {
 
                 const eggChance = userStats.eggChance;
                 
-                console.log(`${(new Date).addHours(8).toHM()}: ${eggChance * 100}% egg roll for ${message.author.username}`);
+                console.log(`${(new Date).addHours(8).toHM()}: ${functions.fixFPErrors(eggChance * 100)}% egg roll for ${message.author.username}`);
 
                 if (Math.random() < eggChance && user.eggs.length < userStats.eggSlots){
                     const egg = chooseEgg(client, message, user);

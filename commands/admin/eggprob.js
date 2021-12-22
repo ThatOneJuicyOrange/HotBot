@@ -1,10 +1,11 @@
 const creatureUserModel = require('../../models/creatureUserSchema');
 const { MessageEmbed } = require('discord.js');
+const functions = require('../../functions.js')
 
 module.exports = {
     name: 'eggprob',
     description: 'see what eggs people can get',
-    usage: "!eggprob <test probability Y/N>",
+    usage: "%PREFIX%eggprob <test probability Y/N>",
     admin: true,
     async execute(client, message, args, Discord){
         let user = await functions.getUser( message.author.id, message.guild.id);

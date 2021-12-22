@@ -7,7 +7,7 @@ Canvas.registerFont('./fonts/Notalot60.ttf', { family: 'Notalot60' });
 module.exports = {
     name: 'eggs',
     description: 'see what eggs you got',
-    usage: "!eggs",
+    usage: "%PREFIX%eggs",
     alt: 'hatchery',
     async execute(client, message, args, Discord){
         let user = await functions.getUser( message.author.id, message.guild.id);

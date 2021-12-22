@@ -10,8 +10,8 @@ const brewSpeed = 5;
 module.exports = {
     name: 'brew',
     description: 'brew a potion',
-    usage: "!brew add <amount> <plant>"
-        + "!brew heat/stir/beat/fold",
+    usage: "%PREFIX%brew add <amount> <plant>\n"
+        + "%PREFIX%brew heat/stir/beat/fold",
     async execute(client, message, args, Discord){
         let user = await functions.getUser(message.author.id, message.guild.id);
         if (!user) return message.channel.send("error getting profile :(");

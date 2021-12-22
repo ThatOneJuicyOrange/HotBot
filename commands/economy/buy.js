@@ -5,7 +5,7 @@ const functions = require('../../functions.js');
 module.exports = {
     name: 'buy',
     description: 'purchase an item from the store',
-    usage: "!buy <item name> <amount>",
+    usage: "%PREFIX%buy <item name> <amount>",
     async execute(client, message, args, Discord){ 
         let user = await functions.getUser( message.author.id, message.guild.id);
         if (!user) return message.channel.send("can't find profile");

@@ -6,7 +6,7 @@ const fs = require('fs');
 module.exports = {
     name: 'seeds',
     description: 'see the details of your owned seeds',
-    usage: "!seeds",
+    usage: "%PREFIX%seeds",
     async execute(client, message, args, Discord){  
         let user = await functions.getUser( message.author.id, message.guild.id);
         if (!user) return message.channel.send("can't find profile");
