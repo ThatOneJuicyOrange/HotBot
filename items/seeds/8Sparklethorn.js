@@ -1,6 +1,6 @@
 module.exports = {
-    name: "Scorchbean Seeds",
+    name: "Sparklethorn Seeds",
     desc: "",
-    price: 500,
+    price: 600,
     cantBuy: true // only chest reward
 }

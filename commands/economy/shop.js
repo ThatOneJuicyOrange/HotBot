@@ -23,7 +23,7 @@ module.exports = {
             const embed = new MessageEmbed()
                 .setColor('#63eb65')
                 .setTitle("the eruption emporium")
-                .setDescription("do !shop <page> to visit each sub-store")
+                .setDescription("do !shop <page> to visit each sub-store\nitems sold go at 80% of their original price")
                 .addField("shops", shopList);
             message.channel.send({ embeds: [embed] });
         }   

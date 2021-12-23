@@ -9,8 +9,11 @@ const reqString = {
 const guildSettingsSchema = new mongoose.Schema({
     guildID: reqString,
     settings: {
-        botChannel: { type: String, default: "" },
-        prefix: { type: String, default: "!" }
+        botChannel: { type: String, default: "-1" },
+        eventChannel: { type: String, default: "-1" },
+        alertChannel: { type: String, default: "-1" },
+        prefix: { type: String, default: "!" },
+        events: { type: Boolean, default: true },
         }
     })
 

@@ -12,9 +12,12 @@ module.exports = {
             const embed = new MessageEmbed()
                 .setColor('#f0c862')
                 .setTitle("tutorials")
+                .addField("setup", "how to setup hotbot")
                 .addField("creatures", "a rundown on how eggs, creatures and trading works")
                 .addField("fishing", "a rundown on how fishing works")
                 .addField("garden", "a rundown on how gardening works")
+                .addField("brewing", "a rundown on how brewing works")
+                .addField("shop", "a rundown on how the shop works")
             message.channel.send({embeds: [embed]});
         }
         else if (args[0] == "creatures") {
@@ -48,5 +51,6 @@ module.exports = {
 
             message.channel.send({embeds: [embed]});
         }
+        else message.channel.send("sorry i dont know about that")
     }
 }

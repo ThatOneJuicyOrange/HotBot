@@ -36,9 +36,9 @@ module.exports = {
                     let grownTime = new Date(grownMs).toCountdown();
                     if (grownMs < 0) grownTime = "grown!";
 
-                    plantList += `🌿**time until grown:** ${grownTime}
-                                💧**water level:** ${(waterLevel * 100).toFixed(2)}%
-                                🍂**dehydration:** ${new Date(plant.timeUnwatered).toCountdown()}\n`;
+                    plantList += `🌿**time until grown:** ${grownTime}\n`
+                                + `💧**water level:** ${(waterLevel * 100).toFixed(2)}%\n`
+                                + `🍂**dehydration:** ${new Date(plant.timeUnwatered).toCountdown()}\n`;
                 }                
             }
             if (plantList == "") plantList = "error";
