@@ -1,1 +1,3 @@
-weatherCache.json
+.weatherCache.json
+node_modules/
+.env
