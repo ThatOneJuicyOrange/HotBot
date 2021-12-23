@@ -3,8 +3,13 @@ const request = require("request");
 const weatherCache = require("./weatherCache.json")
 const fs = require('fs');
 const creatureUserModel = require('./models/creatureUserSchema');
+const guildSettingsModel = require('./models/guildSettingsSchema');
 const functions = require("./functions.js");
 const { MessageActionRow, MessageButton, MessageEmbed } = require('discord.js');
+
+const butterflies = ["Aurelion", "Basilisk", "Hydrotherma", "Tainted Admiral"]
+const colors = ["#d6af3a", "#69c765", "#4681cf", "#d63ad1"]
+const links = ["https://imgur.com/YtUQWSY.png", "https://imgur.com/oNlXH3Z.png", "https://imgur.com/Rdlf8jU.png", "https://imgur.com/TWCQazQ.png"] // cant upload file, otherwise it cant be deleted with an edit
 
 // MAIN TIMERS
 
@@ -22,6 +27,7 @@ exports.runTimer = async (client) => {
         // every 5 minutes
         if (seconds % 300 == 0) {
             updateWeatherCache();
+            await butterflyCheck(client);
         }
 
         // loop through each user
@@ -47,33 +53,98 @@ exports.runTimer = async (client) => {
 }
 
 // butterflies
-function spawnButterfly(client,user){
-    if (Math.random() < 0.05) {
-        const row = new MessageActionRow()
-                .addComponents(
-                    new MessageButton()
-                        .setCustomId('start')
-                        .setEmoji('🦋')
-                        .setLabel('catch butterfly!')
-                        .setStyle('PRIMARY')
-                )
+async function butterflyCheck(client) {
+    guildSettingsModel.find({} , (err, guilds) => {
+        if(err) console.error(err);
 
-        message.channel.send({
-            content:"a butterfly has appeared", 
-            components: [row]
-            })
-        
-        let usersClicked = [];
+        guilds.map(async guild => {
+            if (Math.random() < 0.05) { // roughly 14 butterflies a day: (1440 / 5) * 0.05
+                console.log("attempting butterfly spawn for " + guild.guildID)
+                let channel = -1;
+                if (guild.settings.eventChannel != -1) channel = guild.settings.eventChannel;
+                else if (guild.settings.alertChannel != -1) channel = guild.settings.alertChannel;
+                else if (guild.settings.botChannel != -1) channel = guild.settings.botChannel;
 
-        const filter = (i) => !usersClicked.includes(i.user.id)
-        const collector = message.channel.createMessageComponentCollector({
-            filter
-        })
-        collector.on('collect', i => {
-            usersClicked.push(i.user.id);
-            i.reply({ content: "caught it!", ephemeral: true })
+                if (channel != -1) {
+                    let botC
+                    try {
+                        botC = await client.channels.fetch(channel.toString());
+                    } catch (err) {console.error("error finding channel",err);}
+
+                    if (botC) spawnButterfly(client, botC)
+                    else console.error("cant find channel");        
+                }           
+            }
         });
-    }
+    });
+
+}
+var spawnButterfly = exports.spawnButterfly = async (client, channel) => {
+    const row = new MessageActionRow()
+            .addComponents(
+                new MessageButton()
+                    .setCustomId('start')
+                    .setEmoji('🦋')
+                    .setLabel('catch butterfly!')
+                    .setStyle('PRIMARY')
+            )
+    
+    const choice = Math.floor(Math.random() * butterflies.length);
+    const butterfly = butterflies[choice];
+
+    const embedAppear = new MessageEmbed()
+        .setColor(colors[choice])
+        .setTitle("butterfly!")
+        .setDescription(`✨ a ${butterfly} butterfly has appeared ✨`)
+        .setImage(links[choice]);
+
+    const embedFlyAway = new MessageEmbed()
+        .setColor('#666c73')
+        .setTitle("butterfly...")
+        .setDescription(`the butterfly has flown away :(`);
+
+    let butterflyMessage = await channel.send({
+        embeds: [embedAppear],
+        components: [row]
+        })
+    
+    let usersClicked = [];
+
+    const filter = (i) => !usersClicked.includes(i.user.id)
+    const collector = channel.createMessageComponentCollector({
+        filter,
+        time: 3 * 60 * 1000
+    })
+    collector.on('collect', async i => {
+        usersClicked.push(i.user.id);
+
+        let user = await functions.getUser( i.user.id, i.guildId);
+        if (!user) return console.error("couldnt find profile for butterfly catch");      
+                
+        let rewards = functions.chooseButterflyRewards(client,user,true)
+
+        let rewardString = "";
+        for (item of rewards.itemRewards) {
+            let emoji = functions.getEmojiFromName(client, item.name);
+            if (emoji == '❌') emoji = '';
+            rewardString += `${emoji}${item.name} **x${item.count}**\n`;
+        }
+        if (rewards.flarinReward > 0) { 
+            let flarinEmoji = functions.getEmojiFromName(client, "flarin");
+            rewardString += `${rewards.flarinReward}${flarinEmoji}\n`;
+        }
+
+        const embed = new MessageEmbed()
+            .setColor('#69c765')
+            .setTitle("you caught a butterfly!")
+            .setDescription(rewardString);
+
+        i.reply({ embeds: [embed], ephemeral: true })
+        user.save();
+    });
+    collector.on('end', collected => {
+        butterflyMessage.edit({embeds: [embedFlyAway], components: [], files: []})
+    });  
 }
 // creatures
 
@@ -94,7 +165,7 @@ async function checkEggHatching(client, user){
                 functions.sendAlert(client, `<@!${user.userID}>! your ${egg.name} has hatched!`, user.guildID) 
             
             // log
-            let username = client.users.cache().get(user.userID).username;
+            let username = client.users.cache.get(user.userID).username;
             if (!username) username = user.userID;
             console.log(`hatched ${username}'s ${egg.name} egg`);
             //logCreatureGame(`hatched ${user.userID}'s ${egg.name} egg. they now have\n`);            

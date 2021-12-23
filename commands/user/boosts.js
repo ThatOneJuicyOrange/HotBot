@@ -17,9 +17,9 @@ module.exports = {
             if (!boostData) boostData = client.potions.get(boost.name);
             if (!boostData) {console.log(`couldnt find ${boost.name} data`); continue;}
             if (Date.now() - boost.used < boostData.duration) {
-                boostList += `**${boostData.name}**
-                                ❓${boostData.effect}
-                                🕓${new Date(boostData.duration - (Date.now() - boost.used)).toCountdown()} remaining\n`
+                boostList += `**${boostData.name}**\n`
+                            + `❓${boostData.effect}\n`
+                            + `🕓${new Date(boostData.duration - (Date.now() - boost.used)).toCountdown()} remaining\n`
             }
         }
 

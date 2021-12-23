@@ -13,8 +13,20 @@ const gardenFunctions = require("./gardenFunctions.js");
 exports.getUser = async (userID, guildID) => {
     let user;
     try {  user = await creatureUserModel.findOne({ userID: userID, guildID: guildID }); }
-    catch (err) { console.log(err); }
+    catch (err) { console.error(err); }
     return user;
+}
+
+exports.getGuild = async (guildID) => {
+    let guild;
+    try {
+        guild = await guildSettingsModel.findOne({ guildID: guildID });
+        // create profile if it doesnt exist
+        if (!guild)
+            guild = await guildSettingsModel.create({ guildID: guildID });     
+    }
+    catch (err) { console.error(err); }
+    return guild;
 }
 
 exports.managePlanReactions = async(reaction) => {
@@ -72,7 +84,7 @@ var getUserStats = exports.getUserStats = async(client, userID, guildID) => {
 
     const filter = { userID: userID, guildID: guildID }
     let user = await creatureUserModel.findOne(filter);
-    if (!user) return console.log("error getting profile for stats");
+    if (!user) return console.error("error getting profile for stats");
 
     clearFinishedBoosts(client, user);
 
@@ -80,7 +92,7 @@ var getUserStats = exports.getUserStats = async(client, userID, guildID) => {
     for (const boost of user.boosts) {
         let boostData = client.boosts.get(boost.name);
         if (!boostData) boostData = client.potions.get(boost.name);
-        if (!boostData) {console.log(`couldnt find ${boost.name} data`); continue;}
+        if (!boostData) {console.error(`couldnt find ${boost.name} data`); continue;}
         if (Date.now() - boost.used < boostData.duration) {
             boostData.updateStats(statObject);
         }
@@ -88,16 +100,36 @@ var getUserStats = exports.getUserStats = async(client, userID, guildID) => {
     // upgrades
     for (const upgrade of user.upgrades) {
         let upgradeData = client.upgrades.get(upgrade.name);
-        if (!upgradeData) {console.log(`couldnt find ${upgrade.name} data`); continue;}
+        if (!upgradeData) {console.error(`couldnt find ${upgrade.name} data`); continue;}
         upgradeData.updateStats(statObject, upgrade.count);    
     }
+    // garden
+
+    let plantEffects = new Map();
+    for (const plant of user.garden.plants) {
+        if (plant.name == "none") continue;
+        let plantData = client.plants.get(plant.name);
+        if (!plantData) {console.error(`couldnt find ${plant.name} data`); continue;}
+        if (plantData.updateStats) {
+            let mapEntry = plantEffects.get(plantData.name)
+            if (mapEntry) plantEffects.set(plantData.name, mapEntry + 1)
+            else plantEffects.set(plantData.name, 1)
+        }   
+    }
+    for (const [name, amount] of plantEffects) {
+        let plantData = client.plants.get(name);
+        if (!plantData) {console.error(`couldnt find ${name} data`); continue;}
+        plantData.updateStats(statObject, amount); 
+    }
+
+
     // bait
     let bait = user.baitEquipped;
     if (!bait) bait = "none";
     if (bait != "none") {
         let baitData = client.bait.get(bait);
         if (baitData) baitData.updateStats(statObject);
-        else console.log(`couldnt find ${bait}`)
+        else console.error(`couldnt find ${bait}`)
     }
 
     // hotness
@@ -106,7 +138,7 @@ var getUserStats = exports.getUserStats = async(client, userID, guildID) => {
         statObject.eggChance += hotnessEffect;
         statObject.eggChanceText += `hotness: ${hotnessEffect * 100}%\n`;
     }
-    user.save(); // save cleared boosts
+    //user.save(); // save cleared boosts
     return statObject;
 }
 
@@ -129,32 +161,32 @@ exports.chooseButterflyRewards = (client, user, addToUser) => {
     let flarinReward = 0;
 
     seeds = new Map();
+    seeds.set("Chardaisy Seeds", 0.7);
     seeds.set("Searcap Seeds", 0.6);
-    seeds.set("Gasbloom Seeds", 0.6);
-    seeds.set("Starlight Spud Seeds", 0.3);
-    seeds.set("Scorchbean Seeds", 0.1);
+    seeds.set("Gasbloom Seeds", 0.5);
+    seeds.set("Sparklethorn Seeds", 0.4);
+    seeds.set("Ashdrake Seeds", 0.2);
 
     baitOptions = new Map();
-    baitOptions.set("Orbide", 1.2);
+    baitOptions.set("Orbide", 0.8);
     baitOptions.set("Flareworm", 0.6);
     baitOptions.set("Bloodleech", 0.3);
-    baitOptions.set("Steelshell", 0.2);
-    baitOptions.set("Smokelancer", 0.1);
-    baitOptions.set("Toxicane", 0.1);
 
-    let numRewards = Math.floor(Math.biasedRand(1,6,1,1)) // 1-5 rewards, more likely to get less
+    let numRewards = Math.floor(Math.biasedRand(2, 5, 1.3, 2)) // 2-4 rewards, more likely to get less
     for (let i = 0; i < numRewards; i++) {
         let rand = Math.floor(Math.random() * 3);
         if (rand == 0) {
             let seedChoice = pickFromWeightedMap(seeds);
-            if (!client.seeds.get(seedChoice)) { console.log(`chest seed ${seedChoice} doesnt exist`); continue; }
+            if (!client.seeds.get(seedChoice)) { console.log(`butterfly seed ${seedChoice} doesnt exist`); continue; }
+
             addThingToUser(itemRewards, seedChoice, 1) // not adding to user, just adding to array
             if (addToUser) addThingToUser(user.inventory.seeds, seedChoice, 1);
         }
         else if (rand == 1) {
             let baitChoice = pickFromWeightedMap(baitOptions);
-            if (!client.bait.get(baitChoice)) { console.log(`chest bait ${baitChoice} doesnt exist`); continue; }
+            if (!client.bait.get(baitChoice)) { console.log(`butterfly bait ${baitChoice} doesnt exist`); continue; }
             let baitNum = Math.floor(Math.biasedRand(5, 30, 15, 0.8));
+            
             addThingToUser(itemRewards, baitChoice, baitNum)
             if (addToUser) addThingToUser(user.inventory.bait, baitChoice, baitNum);
         }
@@ -263,15 +295,22 @@ exports.addBoost = (client, user, boostName) => {
     return true;
 }
 
-var clearFinishedBoosts = exports.clearFinishedBoosts = (client, user) => {
-    let toRemove = [];
+var clearFinishedBoosts = exports.clearFinishedBoosts = async (client, user) => {
+    let toRemove = []
     for (let i = 0; i < user.boosts.length; i++){
         let boostData = client.boosts.get(user.boosts[i].name);
         if (!boostData) boostData = client.potions.get(user.boosts[i].name);
         if (!boostData) {console.log(`couldnt find ${boost.name} data`); continue;}
-        if (Date.now() - user.boosts[i].used >= boostData.duration) toRemove.push(i);
+
+        if (Date.now() - user.boosts[i].used >= boostData.duration) 
+            toRemove.push(user.boosts[i])      
     }
-    for (const index of toRemove) user.boosts.splice(index, 1);
+    if (toRemove.length > 0){
+        await creatureUserModel.findOneAndUpdate(
+            {userID: user.userID, guildID: user.guildID}, 
+            {$pull : {'boosts': { $in: toRemove }}}
+        );
+    }
 }
 
 var addThingToUser = exports.addThingToUser = (thingArray, thingName, count) => {
@@ -328,17 +367,20 @@ var removeThingFromUser = exports.removeThingFromUser = (thingArray, thingName, 
 
 var sendAlert = exports.sendAlert = async (client, alertContent, guildID) => {
     let guildSettings = await guildSettingsModel.findOne({guildID: guildID})
-    if (guildSettings) {
-        if (guildSettings.settings.botChannel != -1) {
-            let botC
-            try {
-                botC = await client.channels.fetch(guildSettings.settings.botChannel.toString());
-            }
-            catch (err) {console.error("error finding channel",err);}
-            if (botC) botC.send(alertContent)
-            else console.log("cant find channel");
+    if (!guildSettings) return;
+
+    let channel = -1;
+    if (guildSettings.settings.alertChannel != -1) channel = guildSettings.settings.alertChannel;
+    else if (guildSettings.settings.botChannel!= -1) channel = guildSettings.settings.botChannel;
+    if (channel != -1) {
+        let botC
+        try {
+            botC = await client.channels.fetch(channel.toString());
         }
-    }    
+        catch (err) {console.error("error finding channel",err);}
+        if (botC) botC.send(alertContent)
+        else console.error("cant find channel");
+    }
 }
 var saveUser = exports.saveUser = (user) => {
     creatureUserModel.replaceOne({userID: user.userID, guildID: user.guildID}, user)
@@ -374,6 +416,13 @@ exports.getMoonPhase = (year, month, day) => {
 exports.fixFPErrors = (val) => {
     return parseFloat(val.toFixed(4));
 }
+
+String.prototype.fixFPErrors = 
+Number.prototype.fixFPErrors = 
+() => {
+    return parseFloat(this.toFixed(4));
+}
+
 Math.clamp = function(num, min, max) { return Math.min(Math.max(num, min), max); }
 
 //  modified to allow larger influencesversion of : https://stackoverflow.com/questions/29325069/how-to-generate-random-numbers-biased-towards-one-value-in-a-range

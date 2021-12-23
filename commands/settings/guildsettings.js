@@ -1,73 +1,234 @@
 const guildSettingsModel = require('../../models/guildSettingsSchema');
-const { MessageEmbed, Permissions  } = require('discord.js');
+const { MessageEmbed,MessageButton, MessageActionRow, MessageSelectMenu, MessageCollector, Permissions  } = require('discord.js');
+const functions = require('../../functions.js')
+
+let settingsMap = new Map();
+settingsMap.set("prefix", {
+    display: "Prefix", 
+    description: "Toggle whether HotBot alerts you at night time",
+    type: "string"
+    })
+settingsMap.set("events", {
+    display: "Events", 
+    description: "Toggle whether special events (such as butterflies) should occur on this server. Note: If a bot channel is not set, this won't do anything.",
+    type: "boolean"
+    })
+settingsMap.set("botChannel", {
+    display: "Bot Channel", 
+    description: "Set the channel that HotBot will be used in. Note: commands can still be sent outside of this channel",
+    type: "channelID"
+    })
+settingsMap.set("alertChannel", {
+    display: "Alert Channel", 
+    description: "Set the channel HotBot will send alerts in. Note: The bot channel is used if this is not set",
+    type: "channelID"
+    })
+settingsMap.set("eventChannel", {
+    display: "Event Channel", 
+    description: "Set the channel HotBot will send event notifications in. Note: The bot channel is used if this is not set",
+    type: "channelID"
+    })
 
 module.exports = {
     name: 'guildsettings',
     description: 'view/change your guild settings',
     usage: "%PREFIX%guildsettings <setting> <value>",
     async execute(client, message, args, Discord){       
-        if(!message.member.permissions.has(Permissions.ADMINISTRATOR)) 
+        if(!message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) 
             return message.channel.send("you arent an admin :(");
 
-        let guild;
-        try {
-            const filter = { guildID: message.guild.id }
-            guild = await guildSettingsModel.findOne(filter);
-
-            // create profile if it doesnt exist
-            if (guild == null){
-                guild = await guildSettingsModel.create({
-                    guildID: message.guild.id
-                });
-            }
-        }
-        catch (err) { console.log(err); }
+        let guild = await functions.getGuild(message.guild.id)
         if (!guild) return message.channel.send("error getting profile :(");
         
-        if (args[0]){
-            if (!guild.settings[args[0]] === undefined) return message.channel.send("i cant find that setting");
-            // change setting
-            if (args[1]){
-                
-                if (typeof guild.settings[args[0]] == "boolean") {
-                    if (args[1].toLowerCase() == "false") guild.settings[args[0]] = false;
-                    else if (args[1].toLowerCase() == "true") guild.settings[args[0]] = true;
-                    else return message.channel.send("incorrect data type, please enter " + typeof guild.settings[args[0]]);
-                }
-                else if (typeof guild.settings[args[0]] == "number") {
-                    if (!isNaN(Number(args[1]))) guild.settings[args[0]] = Number(args[1]);
-                    else return message.channel.send("incorrect data type, please enter " + typeof guild.settings[args[0]]);
-                }
-                if (typeof guild.settings[args[0]] == "string") 
-                    guild.settings[args[0]] = args[1];
-
-                if (args[0] == "prefix") 
-                    client.prefixes.set(message.guildId,args[1])         
-
-                message.channel.send(args[0] + " updated to " + args[1])
+        let settingInput = args.join(' ').toCaps();
+        if (args[0]) {
+            let settingName;
+            for (const [setting, value] of Object.entries(guild.settings)) {
+                let settingsData = settingsMap.get(setting);
+                if (setting == args[0] || settingsData.display == settingInput) { settingName = setting; break;}
             }
-            // view setting
-            else {
-                const embed = new MessageEmbed()
-                .setColor('#f0c862')
-                .setTitle(message.guild.name + "'s settings")
-                .addField(args[0],  guild.settings[args[0]], true);
-                message.channel.send({embeds: [embed]});
-            }
+            if (!settingName) return message.channel.send("that setting doesn't exist")
+
+            booleanSetting(message.channel, settingName, message.author.id, guild)              
         }
-        // list settings
         else {
+            let settingsDropdown = [];
             let settingsText = "";
-            for (const [setting, value] of Object.entries(guild.settings))
-                settingsText += `**${setting}**: ${guild.settings[setting]}\n`;
-
+            for (const [setting, value] of Object.entries(guild.settings)) {
+                let settingsData = settingsMap.get(setting);
+                settingsText += `**${settingsData.display}**: ${settingsData.description}\n- ${guild.settings[setting]}\n`;
+                settingsDropdown.push({
+                        label: settingsData.display,
+                        value: setting,
+					})
+            }
             
             const embed = new MessageEmbed()
                 .setColor('#f0c862')
                 .setTitle(message.guild.name + "'s settings")
                 .addField("settings", settingsText, true);
-            message.channel.send({embeds: [embed]});
+                
+            const row = new MessageActionRow()
+			.addComponents(
+                new MessageSelectMenu()
+					.setCustomId('select')
+					.setPlaceholder('Nothing selected')
+					.addOptions(settingsDropdown)
+            )
+            const row2 = new MessageActionRow()
+			.addComponents( 
+                new MessageButton()
+                    .setCustomId(`exit`)
+                    .setLabel('exit')
+                    .setStyle('DANGER')
+            )
+            let settingsMsg = await message.channel.send({
+                embeds: [embed], 
+                components: [row, row2]
+            });  
+            
+            const filter = (i) => i.user.id === message.author.id;
+            const collector = message.channel.createMessageComponentCollector({
+                filter,
+                idle: 60 * 1000
+            })
+            collector.on('collect', async i => {  
+                if (i.customId === 'select') {
+                    let guild = await functions.getGuild(i.guildId)
+                    if (!guild) return message.channel.send("error getting profile :(");
+
+                    if (typeof guild.settings[i.values[0]] == "boolean") 
+                        booleanSetting(i.channel, i.values[0], i.user.id, guild)          
+                    else 
+                        stringSetting(i.channel, i.values[0], i.user.id, guild)          
+                }
+                collector.stop();
+            });   
+            collector.on('end', collected => {
+                settingsMsg.delete();
+            });   
         }
-        guild.save();
     }
 }
+
+async function booleanSetting(channel, setting, userID, guild) {
+    let settingsData = settingsMap.get(setting);
+    const embed = new MessageEmbed()
+        .setColor('#f0c862')
+        .setTitle(settingsData.display)
+        .setDescription(settingsData.description)
+        .addField("current value", `${guild.settings[setting]}`)
+
+    const row = new MessageActionRow()
+        .addComponents(
+            new MessageButton()
+                .setCustomId(`true`)
+                .setLabel('true')
+                .setStyle('PRIMARY'),
+            new MessageButton()
+                .setCustomId(`false`)
+                .setLabel('false')
+                .setStyle('PRIMARY'),
+            new MessageButton()
+                .setCustomId(`exit`)
+                .setLabel('exit')
+                .setStyle('DANGER')
+        )
+
+    let settingsMsg = await channel.send({embeds: [embed], components: [row]})
+
+    const filter = (i) => i.user.id === userID;
+    const collector = channel.createMessageComponentCollector({
+        filter,
+        idle: 60 * 1000
+    })
+    collector.on('collect', i => {  
+        if (i.customId === 'true' || i.customId === 'false') {      
+            guild.settings[setting] = i.customId === 'true';
+            guild.save();
+            i.reply({content: `${settingsData.display} updated to ${i.customId}`, ephemeral: true})
+        }
+        collector.stop();
+    });   
+    collector.on('end', collected => {
+        settingsMsg.delete();
+    }); 
+}
+
+async function stringSetting(channel, setting, userID, guild) {
+    let settingsData = settingsMap.get(setting);
+    const embed = new MessageEmbed()
+        .setColor('#f0c862')
+        .setTitle(settingsData.display)
+        .setDescription(settingsData.description)
+        .addField("current value", `${guild.settings[setting]}`)
+
+        const row = new MessageActionRow()
+    .addComponents(
+        new MessageButton()
+            .setCustomId(`change`)
+            .setLabel('change')
+            .setStyle('PRIMARY'),
+        new MessageButton()
+            .setCustomId(`exit`)
+            .setLabel('exit')
+            .setStyle('DANGER')
+    )
+
+    let settingsMsg = await channel.send({embeds: [embed], components: [row]})
+
+    const filter = (i) => i.user.id === userID;
+    const collector = channel.createMessageComponentCollector({
+        filter,
+        idle: 60 * 1000
+    })
+    collector.on('collect', i => {  
+        if (i.customId === 'change')   
+            stringCollector(channel, setting, userID, guild);
+        collector.stop();
+    });   
+    collector.on('end', collected => {
+        settingsMsg.delete();
+    }); 
+}
+
+async function stringCollector(channel, setting, userID, guild) {
+    let settingsData = settingsMap.get(setting);
+
+    let settingsMsg = await channel.send("please enter the new value.")
+
+    const filter =  m => m.author.id == userID;
+    const collector = new MessageCollector(channel, filter, {
+        max: 1,
+        time: 15 * 1000, 
+    });
+    collector.on("collect", m => {
+        let value = m.content;
+        if (settingsData.type == "channelID") {
+            value = value.replace(/[\\<>@#&!]/g, "");
+            if (value.length != 18 || !/^\d+$/.test(value)) return m.channel.send("incorrect format")
+        }
+
+        guild.settings[setting] = value; 
+        m.channel.send({content: `${settingsData.display} updated to ${m.content}`})
+        guild.save();
+
+        collector.stop();
+    });
+    collector.on('end', collected => {
+        settingsMsg.delete();
+    }); 
+}
+/*
+const collector = new Discord.MessageCollector(message.channel, filter, {
+                max: 1,
+                time: 15 * 1000, // 15s
+            });
+            message.channel.send(`your ${plant.name} in plot ${plot + 1} is not ready to be harvested, are you sure?`);
+            
+            const yessir = ["yes", "yeah", "ye", "yea", "y"];
+
+            collector.on("collect", m => {
+                if (yessir.includes(m.content.toLowerCase())) harvestPlant(message, user,plantData, plot, false);    
+            });
+            */

@@ -1,53 +1,129 @@
 const creatureUserModel = require('../../models/creatureUserSchema');
-const { MessageEmbed } = require('discord.js');
+const { MessageEmbed,MessageButton, MessageActionRow, MessageSelectMenu  } = require('discord.js');
+const functions = require('../../functions.js')
+
+let settingsMap = new Map();
+settingsMap.set("eggNotifs", {display: "Egg Notifications", description: "Toggle HotBot alerting you when one of your egg hatches"})
+settingsMap.set("nightNotifs", {display: "Night Notifications", description: "Toggle whether HotBot alerts you at night time"})
 
 module.exports = {
     name: 'settings',
     description: 'view/change your user settings',
-    usage: "%PREFIX%settings <setting> <value>",
+    usage: "%PREFIX%settings <setting>",
     async execute(client, message, args, Discord){       
         let user = await functions.getUser( message.author.id, message.guild.id);
         if (!user) return message.channel.send("can't find profile");
         
-        if (args[0]){
-            if (user.settings[args[0]] === undefined) return message.channel.send("i cant find that setting");
-            // change setting
-            if (args[1]){
-                if (typeof user.settings[args[0]] == "boolean") {
-                    if (args[1].toLowerCase() == "false") user.settings[args[0]] = false;
-                    else if (args[1].toLowerCase() == "true") user.settings[args[0]] = true;
-                    else return message.channel.send("incorrect data type, please enter " + typeof user.settings[args[0]]);
-                }
-                else if (typeof user.settings[args[0]] == "number") {
-                    if (!isNaN(Number(args[1]))) user.settings[args[0]] = Number(args[1]);
-                    else return message.channel.send("incorrect data type, please enter " + typeof user.settings[args[0]]);
-                }
-                if (typeof user.settings[args[0]] == "string") 
-                    user.settings[args[0]] = args[1];
-                user.save();
-                message.channel.send(args[0] + " updated to " + args[1])
+        let settingInput = args.join(' ').toCaps();
+        if (args[0]) {
+            let settingName;
+            for (const [setting, value] of Object.entries(user.settings)) {
+                let settingsData = settingsMap.get(setting);
+                if (setting == args[0] || settingsData.display == settingInput) { settingName = setting; break;}
             }
-            // view setting
-            else {
-                const embed = new MessageEmbed()
-                .setColor('#f0c862')
-                .setTitle(message.author.username + "'s settings")
-                .addField(args[0],  user.settings[args[0]], true);
-                message.channel.send({embeds: [embed]});
-            }
-        }
-        // list settings
-        else {
-            let settingsText = "";
-            for (const [setting, value] of Object.entries(user.settings)) 
-                settingsText += `**${setting}**: ${user.settings[setting]}\n`;
+            if (!settingName) return message.channel.send("that setting doesn't exist")
 
+            booleanSetting(message.channel, settingName, message.author.id, user)              
+        }
+        else {
+            let settingsDropdown = [];
+            let settingsText = "";
+            for (const [setting, value] of Object.entries(user.settings)) {
+                let settingsData = settingsMap.get(setting);
+                settingsText += `**${settingsData.display}**: ${settingsData.description}\n- ${user.settings[setting]}\n`;
+                settingsDropdown.push({
+                        label: settingsData.display,
+                        description: settingsData.description,
+                        value: setting,
+					})
+            }
             
             const embed = new MessageEmbed()
                 .setColor('#f0c862')
                 .setTitle(message.author.username + "'s settings")
                 .addField("settings", settingsText, true);
-            message.channel.send({embeds: [embed]});
+                
+            const row = new MessageActionRow()
+			.addComponents(
+                new MessageSelectMenu()
+					.setCustomId('select')
+					.setPlaceholder('Nothing selected')
+					.addOptions(settingsDropdown)
+            )
+            const row2 = new MessageActionRow()
+			.addComponents( 
+                new MessageButton()
+                    .setCustomId(`exit`)
+                    .setLabel('exit')
+                    .setStyle('DANGER')
+            )
+            let settingsMsg = await message.channel.send({
+                embeds: [embed], 
+                components: [row, row2]
+            });  
+            
+            const filter = (i) => i.user.id === message.author.id;
+            const collector = message.channel.createMessageComponentCollector({
+                filter,
+                idle: 60 * 1000
+            })
+            collector.on('collect', async i => {  
+                if (i.customId === 'select') {
+                    let user = await functions.getUser( i.user.id, i.guildId);
+                    if (!user) return i.reply("can't find profile");
+
+                    if (typeof user.settings[i.values[0]] == "boolean") 
+                        booleanSetting(i.channel, i.values[0], i.user.id, user)              
+                }
+                collector.stop();
+            });   
+            collector.on('end', collected => {
+                settingsMsg.delete();
+            });   
         }
     }
+}
+
+async function booleanSetting(channel, setting, userID, user) {
+    let settingsData = settingsMap.get(setting);
+    const embed = new MessageEmbed()
+        .setColor('#f0c862')
+        .setTitle(settingsData.display)
+        .setDescription(settingsData.description)
+        .addField("current value", `${user.settings[setting]}`)
+
+        const row = new MessageActionRow()
+    .addComponents(
+        new MessageButton()
+            .setCustomId(`true`)
+            .setLabel('true')
+            .setStyle('PRIMARY'),
+        new MessageButton()
+            .setCustomId(`false`)
+            .setLabel('false')
+            .setStyle('PRIMARY'),
+        new MessageButton()
+            .setCustomId(`exit`)
+            .setLabel('exit')
+            .setStyle('DANGER')
+    )
+
+    let settingsMsg = await channel.send({embeds: [embed], components: [row]})
+
+    const filter = (i) => i.user.id === userID;
+    const collector = channel.createMessageComponentCollector({
+        filter,
+        idle: 60 * 1000
+    })
+    collector.on('collect', i => {  
+        if (i.customId === 'true' || i.customId === 'false') {      
+            user.settings[setting] = i.customId === 'true';
+            user.save();
+            i.reply({content: `${settingsData.display} updated to ${i.customId}`, ephemeral: true})
+        }
+        collector.stop();
+    });   
+    collector.on('end', collected => {
+        settingsMsg.delete();
+    }); 
 }

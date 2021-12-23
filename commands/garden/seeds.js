@@ -24,6 +24,7 @@ module.exports = {
                 `- 🌿Grow Time: ${new Date(plantData.growTime).toCountdown()}\n` +
                 `- 💧Water Rate: Every ${new Date(plantData.waterRate).toCountdown()}\n` +
                 `- 🌾Yield: ${plantData.plantYield}\n`;
+            if (plantData.plantedEffect) seedText += `- ✨Planted Effect: ${plantData.plantedEffect}`
         }
         if (seedText == "") seedText = "you are seedless :(";
         const embed = new MessageEmbed()
