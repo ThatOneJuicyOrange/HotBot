@@ -6,6 +6,8 @@ const timerFunctions = require('./timerFunctions.js');
 const fs = require('fs');
 const ms = require('ms');
 var path = require('path');
+require('dotenv').config() // remove in replit..?
+
 global.appRoot = path.resolve(__dirname);
 
 const client = new Discord.Client({
