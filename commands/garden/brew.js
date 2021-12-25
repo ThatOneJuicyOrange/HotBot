@@ -19,8 +19,8 @@ module.exports = {
         if (!functions.userHasUpgrade(user, "Cauldron")) 
             return message.channel.send("you have no cauldron to brew in! buy one from the shop")
 
-        let actions = ['beat', 'stir', 'fold']
-        let actionPast = ['beat', 'stirred', 'folded']
+        let actions = ['beat', 'stir', 'fold', 'mix']
+        let actionPast = ['beat', 'stirred', 'folded', 'mixed']
         let heatEmoji = ['🧊','🧊', '♨️', '♨️', '🔥', '🔥', '🏜️']
 
         if (!args[0]){

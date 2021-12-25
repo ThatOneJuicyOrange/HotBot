@@ -25,7 +25,15 @@
     "seedrandom": "^3.0.5"
   },
   "devDependencies": {
-    "node": "^16.13.0"
+    "node": "^16.13.1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ThatOneJuicyOrange/HotBot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ThatOneJuicyOrange/HotBot/issues"
+  },
+  "homepage": "https://github.com/ThatOneJuicyOrange/HotBot#readme",
   "description": ""
 }
