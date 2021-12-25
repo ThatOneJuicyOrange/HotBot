@@ -10,7 +10,7 @@ module.exports = {
         let user = await functions.getUser( message.author.id, message.guild.id);
         if (!user) return message.channel.send("can't find profile");
 
-        if (user.creatures.length == 0) message.channel.send("you have no creatures");
+        if (user.creatures.length == 0) return message.channel.send("you have no creatures");
         
         if (args[0]) {
             let creature;

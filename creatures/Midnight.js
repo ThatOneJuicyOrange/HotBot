@@ -4,9 +4,6 @@ module.exports = {
     requirements: "Between 11pm and 1am",
     price: 0,
     hatchTime: 24 * 60 * 60 * 1000,
-    rarity(user){ return 0.1 }, 
-    available(user) {
-        const time = new Date().addHours(8);
-        return time.getHours() >= 23 || time.getHours() <= 1;
-    }
+    rarity: (client, user) => 0.1, 
+    available: (client, user) => new Date().addHours(8).betweenHours(23, 1)
 }

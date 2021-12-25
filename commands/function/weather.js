@@ -1,5 +1,4 @@
 const { MessageEmbed } = require('discord.js');
-const weather = require("../../weatherCache.json");
 const functions = require('../../functions.js')
 const creatureUserModel = require('../../models/creatureUserSchema');
 
@@ -12,6 +11,7 @@ module.exports = {
         let user = await creatureUserModel.findOne(filter);
         if (!user) return message.channel.send("error getting profile :(");
 
+        let weather = await functions.getWeather(client);
         const time = new Date().addHours(8);
         const embed = new MessageEmbed()
                 .setColor('#f0c862')
