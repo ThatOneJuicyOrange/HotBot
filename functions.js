@@ -68,11 +68,16 @@ var getUserStats = exports.getUserStats = async(client, userID, guildID) => {
         eggCD: config.eggMsgCD, eggCDText: `Base ${config.eggMsgCD} minutes\n`,
         eggSlots: 3, eggSlotsText: "Base 3\n",
         eggHatchSpeed: 1, eggHatchSpeedText: "Base 100%\n",
+
         fishChance: config.fishChance, fishChanceText: `Base ${config.fishChance * 100}%\n`,
         bonusFishChance: 0, bonusFishChanceText: `Base 0%\n`,
         rareFishScale: 0, rareFishScaleText: `Base 0%\n`,
         chestChance: config.chestChance, chestChanceText: `Base ${config.chestChance * 100}%\n`,
         artifactChance: config.artifactChance, artifactChanceText: `Base ${config.artifactChance * 100}%\n`,
+        chestMultiplier: 1, chestMultiplierText: `Base 100%\n`,
+
+        butterflyMultiplier: 1, butterflyMultiplierText: `Base 100%\n`,
+
         gardenPlots: 2, gardenPlotsText: `Base 3\n`,
         gardenGrowthRate: 1, gardenGrowthRateText: `Base 100%\n`,
         gardenWaterNeed: 1, gardenWaterNeedText: `Base 100%\n`
@@ -153,6 +158,17 @@ var userHasUpgrade = exports.userHasUpgrade = (user, upgradeName) => {
         if (upgrade.name == upgradeName) return true;
     }
     return false;
+}
+
+exports.weightScale = (map, influence) => {
+    let weightSum = 0;
+    for (const [key, value] of map) weightSum += value;
+    averageWeight = weightSum / map.size;
+
+    let scaledWeighting = new Map()
+    for (const [key, value] of map) {
+        scaledWeighting.set(key, value + (averageWeight - value) * influence)
+    }
 }
 
 exports.chooseButterflyRewards = (client, user, addToUser) => {

@@ -63,9 +63,9 @@ module.exports = {
         else {
             const canvas = Canvas.createCanvas(346, 200);
             const context = canvas.getContext('2d');
-            const garden = await Canvas.loadImage('./garden/GardenBase.png');
-            const plot = await Canvas.loadImage('./garden/Plot.png');
-            const bars = await Canvas.loadImage('./garden/Bars.png');
+            const garden = await Canvas.loadImage('./assets/garden/GardenBase.png');
+            const plot = await Canvas.loadImage('./assets/garden/Plot.png');
+            const bars = await Canvas.loadImage('./assets/g arden/Bars.png');
 
             context.drawImage(garden, 0, 0, canvas.width, canvas.height);
             for (let layer = 0; layer < 3; layer++) {
@@ -80,7 +80,7 @@ module.exports = {
                         // plant
                         if (plantData){
                             let plantFileName = plant.name.split(' ').join(''); // remove all spaces
-                            const plantTex = await Canvas.loadImage(`./garden/plants/${plantFileName}.png`);
+                            const plantTex = await Canvas.loadImage(`./assets/garden/plants/${plantFileName}.png`);
                             context.drawImage(plantTex, plotX, plotY - 14, 84, 58);
                         }
                         else if(plant.name != "none"){
