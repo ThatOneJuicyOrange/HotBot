@@ -4,5 +4,5 @@ module.exports = {
     requirements: "Between 6pm and 6am",
     price: 0,
     hatchTime: 3 * 24 * 60 * 60 * 1000,
-    weight: (client, user) => new Date().addHours(18,6) ? 0.05 : 0, 
+    weight: (client, user) => Date.nowWA().betweenHours(18,6) ? 0.05 : 0, 
 }

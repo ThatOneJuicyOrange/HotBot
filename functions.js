@@ -440,6 +440,10 @@ String.prototype.toCaps = function() {
     return this.split(' ').map(capitalize).join(' ');
 }
 
+Date.nowWA = function() {
+    return new Date((new Date().getTime() + new Date().getTimezoneOffset() + 480));
+}
+
 Date.parseWADate= function(date){
     let pieces = date.split("/");
     let toParse = date; 
