@@ -9,15 +9,15 @@ var path = require('path');
 global.appRoot = path.resolve(__dirname);
 
 const client = new Discord.Client({
-	partials: ['MESSAGE', 'CHANNEL', 'REACTION'],
-	intents: [
-		'GUILDS',
-		'GUILD_MESSAGES',
-		'GUILD_MEMBERS',
-		'GUILD_EMOJIS_AND_STICKERS',
-		'GUILD_PRESENCES',
-		'GUILD_MESSAGE_REACTIONS'
-	]
+    partials: ['MESSAGE', 'CHANNEL', 'REACTION'],
+    intents: [
+        'GUILDS',
+        'GUILD_MESSAGES',
+        'GUILD_MEMBERS',
+        'GUILD_EMOJIS_AND_STICKERS',
+        'GUILD_PRESENCES',
+        'GUILD_MESSAGE_REACTIONS'
+    ]
 });
 
 // more collections are defined in itemHandler
@@ -36,30 +36,30 @@ keepAlive();
 timerFunctions.runTimer(client);
 
 mongoose
-	.connect(
-		process.env['DBTOKEN'],
-		{
-			useNewUrlParser: true,
-			useUnifiedTopology: true,
-			useFindAndModify: false
-		}
-	)
-	.then(() => {
-		console.log('located the juice');
-	})
-	.catch(err => {
-		console.log(err);
-	});
+    .connect(
+        process.env['DBTOKEN'],
+        {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            useFindAndModify: false
+        }
+    )
+    .then(() => {
+        console.log('located the juice');
+    })
+    .catch(err => {
+        console.log(err);
+    });
 
 //client.on('debug', console.log);
 client.on('rateLimit', info => {
-	console.log(
-		`Rate limit hit ${
-			info.timeDifference
-				? info.timeDifference
-				: info.timeout
-					? info.timeout
-					: 'Unknown timeout '
-		}`)
+    console.log(
+        `Rate limit hit ${
+        info.timeDifference
+            ? info.timeDifference
+            : info.timeout
+                ? info.timeout
+                : 'Unknown timeout '
+        }`)
 });
 client.login(process.env['TOKEN']); // keep at end
