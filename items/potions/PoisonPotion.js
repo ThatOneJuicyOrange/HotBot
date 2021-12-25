@@ -4,7 +4,7 @@ module.exports = {
     name: "Poison Potion",
     desc: "",
     effect: "Increases chance to get rare fish",
-    steps: "add 1 Toxeel-cool-mix-add 2 Starlight Spud-stir-boil",
+    steps: "add 1 Toxeel-cool-mix-add 2 Starlight Spud-stir-boiling",
     price: 750,
     duration: 6 * 60 * 60 * 1000,
     cantBuy: true,

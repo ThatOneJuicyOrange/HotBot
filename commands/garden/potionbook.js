@@ -3,6 +3,8 @@ const config = require("../../config.json");
 const functions = require('../../functions.js')
 const { MessageActionRow, MessageButton, MessageEmbed } = require('discord.js');
 
+let heat = ['cold', 'cool', 'lukewarm', 'hot', 'bubbling', 'boiling', 'evaporated']
+
 module.exports = {
     name: 'potionbook',
     description: 'water a plant',
@@ -22,7 +24,8 @@ module.exports = {
                 let steps = potion.steps.split('-');
                 let stepString = "";
                 for (let i = 0; i < steps.length; i++) {
-                    stepString += `**${i + 1}.** ${steps[i]}\n`
+                    if (heat.includes(steps[i])) stepString += `**${i + 1}.** heat until ${steps[i]}\n`
+                    else stepString += `**${i + 1}.** ${steps[i]}\n`
                 }
                 
                 potionText += "`method:\n` " + stepString + "\n"

@@ -120,7 +120,8 @@ module.exports = {
                                 let index = parseInt(seconds / brewSpeed);
                                 i.message.edit({
                                     content:`your brew is ${heatEmoji[index]} ${heat[index]}`,
-                                    components: [row]
+                                    components: [row],
+                                    embeds: []
                                 })
                             }
                             seconds++;
@@ -157,7 +158,7 @@ module.exports = {
                 if (stepString != "") stepString += "-";
                 stepString += step;
             }
-
+            console.log(`${message.author.username} tried to brew with steps ${stepString}`)
             let potionBrewed = "";
             for (const [name, potion] of client.potions) {
                 if (potion.steps == stepString) {
@@ -178,7 +179,7 @@ module.exports = {
     }
 }   
 function finishHeating(user, msg, seconds) {
-    msg.edit({content: `you heated the brew until it was ${heat[parseInt(seconds / brewSpeed)]}`, components: []})
+    msg.edit({content: `you heated the brew until it was ${heat[parseInt(seconds / brewSpeed)]}`, components: [], embeds: []})
     user.brew.steps.push(heat[parseInt(seconds / brewSpeed)])
     user.save();
 }
