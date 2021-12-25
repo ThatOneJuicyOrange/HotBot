@@ -64,6 +64,8 @@ var getUserStats = exports.getUserStats = async(client, userID, guildID) => {
         eggSlots: 3, eggSlotsText: "Base 3\n",
         eggHatchSpeed: 1, eggHatchSpeedText: "Base 100%\n",
 
+        eggWeightScales: new Map(), eggWeightScalesText: "Base 100%\n",
+
         fishChance: config.fishChance, fishChanceText: `Base ${config.fishChance * 100}%\n`,
         bonusFishChance: 0, bonusFishChanceText: `Base 0%\n`,
         rareFishScale: 0, rareFishScaleText: `Base 0%\n`,
@@ -176,13 +178,18 @@ exports.chooseButterflyRewards = (client, user, addToUser) => {
     seeds.set("Gasbloom Seeds", 0.5);
     seeds.set("Sparklethorn Seeds", 0.4);
     seeds.set("Ashdrake Seeds", 0.3);
+    seeds = functions.weightScale(map, userStats.butterflyMultiplier - 1)
 
     baitOptions = new Map();
     baitOptions.set("Orbide", 0.8);
     baitOptions.set("Flareworm", 0.6);
     baitOptions.set("Bloodleech", 0.3);
+    baitOptions = functions.weightScale(map, userStats.butterflyMultiplier - 1)
 
-    let numRewards = Math.floor(Math.biasedRand(2, 5, 1.3, 2)) // 2-4 rewards, more likely to get less
+    let min = 2;
+    let max = 6;
+    let target = min + ((max- min) * (userStats.butterflyMultiplier- 1))
+    let numRewards = Math.floor(Math.biasedRand(min, max, 1.3, target)) // 2-5 rewards, more likely to get less    
     for (let i = 0; i < numRewards; i++) {
         let rand = Math.floor(Math.random() * 3);
         if (rand == 0) {

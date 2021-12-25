@@ -58,9 +58,10 @@ exports.chooseChestRewards = async (client, user, addToUser) => {
     baitOptions.set("Toxicane", 0.1);
     baitOptions = functions.weightScale(map, userStats.chestMultiplier - 1)
 
+    let min = 1;
     let max = 6;
-    let target = 1 + (max * (userStats.chestMultiplier- 1))
-    let numRewards = Math.floor(Math.biasedRand(1, max, 1, target)) // 1-5 rewards, more likely to get less
+    let target = min + ((max- min) * (userStats.chestMultiplier- 1))
+    let numRewards = Math.floor(Math.biasedRand(min, max, 1, target)) // 1-5 rewards, more likely to get less
     if (numRewards > 3) chestTier = "Rare";
     //console.log("chest rewards: "+ numRewards);
     for (let i = 0; i < numRewards; i++) {
