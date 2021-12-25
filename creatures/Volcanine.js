@@ -4,6 +4,5 @@ module.exports = {
     requirements: "Weather above 20C",
     price: 0,
     hatchTime: 5 * 60 * 60 * 1000,
-    rarity: (client, user) => 0.5, 
-    available: (client, user) => client.weatherCache.temperature > 20
+    weight: (client, user) => client.weatherCache.temperature > 20 ? 0.5 : 0
 }

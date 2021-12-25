@@ -4,9 +4,8 @@ module.exports = {
     requirements: "First week of the month, alternating weeks after that.",
     price: 0,
     hatchTime: 4 * 60 * 60 * 1000,
-    rarity: (client, user) => 0.3, 
-    available: (client, user) => {
+    weight: (client, user) => {
         const time = new Date().addHours(8);
-        return Math.floor(time.getDate() / 7) % 2 == 0
+        return (Math.floor(time.getDate() / 7) % 2 == 0) ? 0.3 : 0
     }
 }

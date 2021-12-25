@@ -74,20 +74,13 @@ async function checkEgg(Discord, client, message) {
 }
 
 function chooseEgg(client, message, user){
-    availableEggs = [];
-    
-    for (const [name, creature] of client.creatures) {
-        if (creature.available(client, user)) availableEggs.push(creature);
-    } 
-
-    if (availableEggs.length == 0) { console.log("no eggs available"); return; }
-
     let weightSum = 0.0;
-    for (const egg of availableEggs) weightSum += egg.rarity(client, user);
+    for (const [name, creature] of client.creatures) weightSum += creature.weight(client, user);
+
     let rand = Math.random() * weightSum;
-    for (const egg of availableEggs) {
-        if (rand <= egg.rarity(client, user)) return egg;
-        rand -= egg.rarity(client, user); // subtract the weight so the total is only the sum of remaining options
+    for (const [name, creature] of client.creatures) {
+        if (rand <= egg.weight(client, user)) return egg;
+        rand -= egg.weight(client, user); // subtract the weight so the total is only the sum of remaining options
     }
     console.log('error picking egg');
     return null; // should never happen lmao but you know OrangeCode™

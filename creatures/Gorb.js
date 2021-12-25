@@ -6,6 +6,5 @@ module.exports = {
     requirements: "Between 8am-8pm. More common during rain",
     price: 0,
     hatchTime: 3 * 60 * 60 * 1000,
-    rarity: (client, user) => functions.isRaining(client, user) ? 0.8 : 0.4, 
-    available: (client, user) => new Date().addHours(8).betweenHours(8,20)
+    weight: (client, user) => new Date().addHours(8).betweenHours(8,20) ? (functions.isRaining(client, user) ? 0.8 : 0.4) : 0
 }
