@@ -4,6 +4,6 @@ module.exports = {
     requirements: "None",
     price: 0,
     hatchTime: 2 * 60 * 60 * 1000,
-    rarity(user){ return 0.6 }, 
-    available(user) { return true }
+    rarity: (client, user) => 0.6, 
+    available: (client, user) => true
 }

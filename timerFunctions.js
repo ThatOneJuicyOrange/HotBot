@@ -1,6 +1,5 @@
 const gardenFunctions = require("./gardenFunctions.js");
-const request = require("request");
-const weatherCache = require("./weatherCache.json")
+const fetch = require('node-fetch');
 const fs = require('fs');
 const creatureUserModel = require('./models/creatureUserSchema');
 const guildSettingsModel = require('./models/guildSettingsSchema');
@@ -15,19 +14,19 @@ const links = ["https://imgur.com/YtUQWSY.png", "https://imgur.com/oNlXH3Z.png",
 // MAIN TIMERS
 
 exports.runTimer = async (client) => {
-    updateWeatherCache();
+    updateWeatherCache(client);
 
     let seconds = 0;
     let repeatDelay = 20; // in seconds
     setInterval(async function() { 
         seconds += repeatDelay;
-
+        
         // every minute
         if (seconds % 60 == 0) {
         }
         // every 5 minutes
         if (seconds % 300 == 0) {
-            updateWeatherCache();
+            updateWeatherCache(client);
             await butterflyCheck(client);
         }
 
@@ -199,24 +198,15 @@ async function updateGardenWater(client, user) {
 }
 
 // weather
-
-function updateWeatherCache() { 
+async function updateWeatherCache(client) {
     const url = 'http://api.openweathermap.org/data/2.5/weather?q=Perth&appid=' + process.env['WEATHERTOKEN'];
-    request(url, function(err, response, body) {
-        // On return, check the json data fetched
-        if (err) {
-            console.log(err)
-        } else {
-            let weather = JSON.parse(body);
-            if (weather.main == undefined) console.log("error getting weather")
-            else {
-                //console.log(weather);
-                weatherCache.weather = weather.weather[0].main;  
-                weatherCache.temperature = weather.main.temp - 273.15;  
-                weatherCache.windspd = weather.wind.speed;  
-                weatherCache.clouds = weather.clouds.all;  
-                fs.writeFileSync("./weatherCache.json", JSON.stringify(weatherCache));
-            }
-        }
-    });
+    let weather = await fetch(url)
+    let weatherJSON = await weather.json();
+    let weatherData = {
+        weather: weatherJSON.weather[0].main,
+        temperature: weatherJSON.main.temp - 273.15,
+        windspd: weatherJSON.wind.speed,
+        clouds: weatherJSON.clouds.all  
+    }
+    client.weatherCache = weatherData;
 }

@@ -35,7 +35,7 @@ exports.chooseFish = (client, rarityInfluence) => {
 }
 
 
-exports.chooseChestRewards = (client, user, addToUser) => {
+exports.chooseChestRewards = async (client, user, addToUser) => {
     const userStats = await functions.getUserStats(client, message.author.id, message.guild.id);
 
     let chestRewards = [];

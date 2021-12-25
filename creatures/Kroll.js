@@ -6,9 +6,9 @@ module.exports = {
     requirements: "New moon",
     price: 0,
     hatchTime: 3* 24 * 60 * 60 * 1000,
-    rarity(user){ return 0.9; }, 
-    available(user) { 
-            const time = new Date().addHours(8);
-            return (time.getHours() >= 18 || time.getHours() <= 6) && functions.getMoonPhase(time.getFullYear(), time.getMonth(), time.getDate()).phase == 0; 
-        }
+    rarity: (client, user) => 0.9, 
+    available: (client, user) => {
+        const time = new Date().addHours(8);
+        return time.betweenHours(18,6) && functions.getMoonPhase(time.getFullYear(), time.getMonth(), time.getDate()).phase == 0; 
+    }
 }

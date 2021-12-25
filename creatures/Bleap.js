@@ -5,6 +5,6 @@ module.exports = {
     requirements: "None",
     price: 0,
     hatchTime: 1 * 60 * 60 * 1000,
-    rarity(user){ if (functions.userHasBoost(user, "Salt")) return 0.5; return 1 }, 
-    available(user) { return true }
+    rarity: (client, user) => functions.userHasBoost(user, "Salt") ? 0.5 : 1,
+    available: (client, user) => true
 }

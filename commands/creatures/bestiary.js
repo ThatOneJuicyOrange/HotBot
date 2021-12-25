@@ -26,7 +26,7 @@ module.exports = {
             let emoji = functions.getEmojiFromName(client, emojiName);
             if (!emoji) emoji = '❌';
 
-            let availableEmoji = c.available(user) ? functions.getEmojiFromName(client, "check") : '❌';
+            let availableEmoji = c.available(client, user) ? functions.getEmojiFromName(client, "check") : '❌';
             let line = `${emoji}` + `${availableEmoji}` + " **" + creatureName + "**: " + c.requirements + "\n";
             // fields cant be longer than 1024
             if ((creatureText[textIndex] + line).length > 1024) {
