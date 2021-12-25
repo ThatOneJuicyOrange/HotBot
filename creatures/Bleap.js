@@ -5,5 +5,5 @@ module.exports = {
     requirements: "None",
     price: 0,
     hatchTime: 1 * 60 * 60 * 1000,
-    weight: (client, user) => functions.userHasBoost(user, "Salt") ? 0.5 : 1
+    weight: (client, user) => 1
 }

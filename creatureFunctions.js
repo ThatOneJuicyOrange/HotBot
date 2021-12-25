@@ -11,14 +11,14 @@ const clearEggCD = () => {
 };
 clearEggCD();
 
-async function checkEgg(Discord, client, message) {
+exports.checkEgg = async (Discord, client, message) => {
     try {
         if (!eggCD.includes(message.author.id)) {
             const filter = { userID: message.author.id, guildID: message.guild.id }
             let user = await creatureUserModel.findOne(filter);
 
             // create profile if it doesnt exist
-            if (user == null){
+            if (user == null) {
                 let profile = await creatureUserModel.create({
                     userID: message.author.id,
                     guildID: message.guild.id,
@@ -41,29 +41,29 @@ async function checkEgg(Discord, client, message) {
             }
             else {
                 const update = { lastMsg: new Date().getTime() }
-                user = await creatureUserModel.findOneAndUpdate(filter, update, {upsert: true});
+                user = await creatureUserModel.findOneAndUpdate(filter, update, { upsert: true });
 
                 const eggChance = userStats.eggChance;
-                
+
                 console.log(`${(new Date).addHours(8).toHM()}: ${functions.fixFPErrors(eggChance * 100)}% egg roll for ${message.author.username}`);
 
-                if (Math.random() < eggChance && user.eggs.length < userStats.eggSlots){
-                    const egg = chooseEgg(client, message, user);
+                if (Math.random() < eggChance && user.eggs.length < userStats.eggSlots) {
+                    const egg = await chooseEgg(client, message, user);
                     if (egg) {
-                        console.log(`given ${message.author.username} a ${egg.name} egg`);   
+                        console.log(`given ${message.author.username} a ${egg.name} egg`);
 
                         let emoji = functions.getEmojiFromName(client, egg.name + "Egg");
                         if (!emoji) emoji = '🥚';
                         message.react(emoji);
 
-                        const eggData = {name : egg.name, obtained : new Date(), hatchTime : egg.hatchTime }
+                        const eggData = { name: egg.name, obtained: new Date(), hatchTime: egg.hatchTime }
                         user.eggs.push(eggData);
-                        user.save();                      
+                        user.save();
                     } else console.log("no egg was found!");
                 }
             }
-        } 
-        else { 
+        }
+        else {
             //console.log(message.author.username + " is in the cache")          
         }
 
@@ -73,19 +73,23 @@ async function checkEgg(Discord, client, message) {
     }
 }
 
-function chooseEgg(client, message, user){
+var calculateWeight = exports.calculateWeight = (client, user, creature, userStats) => {
+    let weight = userStats.eggWeightScales.get(creature.name);
+    if (!weight) weight = 1;
+    return creature.weight(client, user) * weight
+}
+
+exports.chooseEgg = async (client, message, user) => {
+    const userStats = await functions.getUserStats(client, user.userID, user.guildID);
+
     let weightSum = 0.0;
-    for (const [name, creature] of client.creatures) weightSum += creature.weight(client, user);
+    for (const [name, creature] of client.creatures) weightSum += calculateWeight(client, user, creature, userStats);
 
     let rand = Math.random() * weightSum;
     for (const [name, creature] of client.creatures) {
-        if (rand <= egg.weight(client, user)) return egg;
-        rand -= egg.weight(client, user); // subtract the weight so the total is only the sum of remaining options
+        if (rand <= calculateWeight(client, user, creature, userStats)) return egg;
+        rand -= calculateWeight(client, user, creature, userStats); // subtract the weight so the total is only the sum of remaining options
     }
     console.log('error picking egg');
     return null; // should never happen lmao but you know OrangeCode™
 }
-
-
-
-module.exports = {checkEgg, chooseEgg};
