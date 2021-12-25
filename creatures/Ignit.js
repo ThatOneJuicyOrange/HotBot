@@ -4,6 +4,5 @@ module.exports = {
     requirements: "50% clouds coverage",
     price: 0,
     hatchTime: 24 * 60 * 60 * 1000,
-    rarity: (client, user) => 0.5, 
-    available: (client, user) => client.weatherCache.clouds >= 50
+    weight: (client, user) => client.weatherCache.clouds >= 50 ? 0.5 : 0
 }
