@@ -4,7 +4,7 @@ module.exports = {
     name: "Magnetism Potion",
     desc: "",
     effect: "Increases chest chance by 10% but removes the chance to get a fish",
-    steps: "simmer-add 5 Coalsprout-stir-add 8 Searcap-boil",
+    steps: "hot-add 5 Coalsprout-stir-add 8 Searcap-boiling",
     price: 750,
     duration: 10 * 60 * 1000,
     cantBuy: true,
