@@ -6,6 +6,7 @@ const creatureUserModel = require('./models/creatureUserSchema');
 const guildSettingsModel = require('./models/guildSettingsSchema');
 const functions = require("./functions.js");
 const { MessageActionRow, MessageButton, MessageEmbed } = require('discord.js');
+const config = require("./config.json");
 
 const butterflies = ["Aurelion", "Basilisk", "Hydrotherma", "Tainted Admiral"]
 const colors = ["#d6af3a", "#69c765", "#4681cf", "#d63ad1"]
@@ -183,7 +184,7 @@ function clearOldBrews(client, user) {
     if (user.brew.started && Date.now() - user.brew.started.getTime() > config.brewExpiry) {
         user.brew.started = null;
         user.brew.steps = [];
-        sendAlert(client, `<@!${user.userID}>! your brew has expired D:`, user.guildID) 
+        functions.sendAlert(client, `<@!${user.userID}>! your brew has expired D:`, user.guildID) 
     }    
 }
 

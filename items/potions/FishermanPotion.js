@@ -4,7 +4,7 @@ module.exports = {
     name: "Potion of the Fisherman",
     desc: "",
     effect: "Increases chance to catch a fish by 5%",
-    steps: "add 2 Goldie-boil-add 3 Sparkweed-beat",
+    steps: "add 2 Goldie-boiling-add 3 Sparkweed-beat",
     price: 250,
     duration: 6 * 60 * 60 * 1000,
     cantBuy: true,
