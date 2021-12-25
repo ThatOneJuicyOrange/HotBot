@@ -177,11 +177,10 @@ exports.chooseButterflyRewards = (client, user, addToUser) => {
     let flarinReward = 0;
 
     seeds = new Map();
-    seeds.set("Chardaisy Seeds", 0.7);
     seeds.set("Searcap Seeds", 0.6);
     seeds.set("Gasbloom Seeds", 0.5);
     seeds.set("Sparklethorn Seeds", 0.4);
-    seeds.set("Ashdrake Seeds", 0.2);
+    seeds.set("Ashdrake Seeds", 0.3);
 
     baitOptions = new Map();
     baitOptions.set("Orbide", 0.8);
