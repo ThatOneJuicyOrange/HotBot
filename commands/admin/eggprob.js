@@ -20,8 +20,10 @@ module.exports = {
             for (const [name, creature] of client.creatures) {
                 total += cf.calculateWeight(client,user,creature,userStats);
             }
+
             for (const [name, creature] of client.creatures) {
-                if (cf.calculateWeight(client,user,creature,userStats) != 0) eggs += creature.name + "  |  " + ((cf.calculateWeight(client,user,creature,userStats) / total) * 100).toFixed(2) + "\n";
+                if (creature.weight(client, user) != 0) 
+                    eggs += creature.name + "  |  " + ((cf.calculateWeight(client,user,creature,userStats) / total) * 100).toFixed(2) + "\n";
             }
             message.channel.send(eggs);
         }
@@ -51,11 +53,11 @@ module.exports = {
             for (let i = 0; i < trials; i++) {
                 let rand = Math.random() * weightSum;
                 for (const egg of availableEggs) {
-                    if (rand <= cf.calculateWeight(client,user,creature,userStats)) {
+                    if (rand <= cf.calculateWeight(client,user,egg,userStats)) {
                         probabilityMap.get(egg.name).count++;
                         break;
                     }
-                    rand -= cf.calculateWeight(client,user,creature,userStats); 
+                    rand -= cf.calculateWeight(client,user,egg,userStats); 
                 }
             }
             let eggs = "";

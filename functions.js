@@ -487,8 +487,9 @@ Date.prototype.addHours= function(h){
     this.setHours(this.getHours()+h);
     return this;
 }
-
+ // 23 - 1
 Date.prototype.betweenHours= function(min, max) {
+    if (min > max) return this.getHours() >= min || this.getHours() < max;
     return this.getHours() >= min && this.getHours() < max;
 }
 
