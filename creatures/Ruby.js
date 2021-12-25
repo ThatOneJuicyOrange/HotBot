@@ -5,7 +5,7 @@ module.exports = {
     price: 0,
     hatchTime: 5 * 60 * 60 * 1000,
     weight: (client, user) => {
-        const time = new Date().addHours(8);
+        const time = Date.nowWA();
         return (time.getDay() % 2 != 0 || time.getDay() >= 5) ? 0.5 : 0;
     }
 }

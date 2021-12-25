@@ -6,7 +6,7 @@ module.exports = {
     usage: "%PREFIX%time",
     admin: true,
     execute(client, message, args, Discord){
-        const time = new Date().addHours(8);
+        const time = Date.nowWA();
         message.channel.send(
             "time: " + time.getHours() + ":" + time.getMinutes() + "\n" +
             "date: " + time.getDate() + "\n" +

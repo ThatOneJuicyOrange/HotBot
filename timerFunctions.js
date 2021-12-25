@@ -160,7 +160,7 @@ async function checkEggHatching(client, user){
             functions.addThingToUser(user.creatures, egg.name,1);
 
             // send notification if enabled
-            const time = new Date().addHours(8);
+            const time = Date.nowWA();
             if (user.settings.eggNotifs && ((time.getHours() >= 21 || time.getHours() <= 7) || user.settings.nightNotifs)) 
                 functions.sendAlert(client, `<@!${user.userID}>! your ${egg.name} has hatched!`, user.guildID) 
             

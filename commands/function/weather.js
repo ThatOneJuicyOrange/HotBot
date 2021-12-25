@@ -12,7 +12,7 @@ module.exports = {
         if (!user) return message.channel.send("error getting profile :(");
 
         let weather = await functions.getWeather(client);
-        const time = new Date().addHours(8);
+        const time = Date.nowWA();
         const embed = new MessageEmbed()
                 .setColor('#f0c862')
                 .setTitle('current weather')
