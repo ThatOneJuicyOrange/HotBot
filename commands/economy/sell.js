@@ -8,10 +8,7 @@ module.exports = {
     description: 'sell items',
     usage: "%PREFIX%sell <item name> [amount]\n"
         + "%PREFIX%sell fish",
-    async execute(client, message, args, Discord){  
-        let user = await functions.getUser( message.author.id, message.guild.id);
-        if (!user) return message.channel.send("can't find profile");
-        
+    async execute(client, message, args, user, userStats){  
         let flarinEmoji = functions.getEmojiFromName(client, "flarin");
 
         if (!args[0]) {

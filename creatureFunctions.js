@@ -25,23 +25,24 @@ exports.checkEgg = async (client, user, userStats, message) => {
                 //console.log("timer not done, adding to cache");
             }
             else {
-                const update = { lastMsg: new Date().getTime() }
-                user = await creatureUserModel.findOneAndUpdate(filter, update, { upsert: true });
+                // set last message
+                await creatureUserModel.findOneAndUpdate({userID: user.userID, guildID: user.guildID}, { lastMsg: new Date().getTime() }, { upsert: true });
 
                 const eggChance = userStats.eggChance;
 
-                console.log(`${(new Date).addHours(8).toHM()}: ${functions.fixFPErrors(eggChance * 100)}% egg roll for ${message.author.username}`);
+                console.log(`${Date.nowWA().toHM()}: ${functions.fixFPErrors(eggChance * 100)}% egg roll for ${message.author.username}`);
 
                 if (Math.random() < eggChance && user.eggs.length < userStats.eggSlots) {
                     const egg = await chooseEgg(client, message, user);
                     if (egg) {
-                        console.log(`given ${message.author.username} a ${egg.name} egg`);
+                        console.log(`${Date.nowWA().toHM()}: given ${message.author.username} a ${egg.name} egg`);
 
                         let emoji = functions.getEmojiFromName(client, egg.name + "Egg");
                         if (emoji == "❌") emoji = '🥚';
                         message.react(emoji);
 
                         const eggData = { name: egg.name, obtained: new Date(), hatchTime: egg.hatchTime }
+                        // push egg
                         await creatureUserModel.findOneAndUpdate(
                             {userID: user.userID, guildID: user.guildID}, 
                             {$push : {'eggs': eggData}}

@@ -33,7 +33,7 @@ module.exports = {
     name: 'guildsettings',
     description: 'view/change your guild settings',
     usage: "%PREFIX%guildsettings <setting> <value>",
-    async execute(client, message, args, Discord){       
+    async execute(client, message, args, user, userStats){       
         if(!message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) 
             return message.channel.send("you arent an admin :(");
 

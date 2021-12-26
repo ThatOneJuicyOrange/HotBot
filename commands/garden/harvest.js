@@ -6,11 +6,7 @@ module.exports = {
     name: 'harvest',
     description: 'harvest a crop!',
     usage: "%PREFIX%harvest <plot>",
-    async execute(client, message, args, Discord){
-       let user = await functions.getUser( message.author.id, message.guild.id);
-        if (!user) return message.channel.send("can't find profile");
-
-        const userStats = await functions.getUserStats(client, message.author.id, message.guild.id);
+    async execute(client, message, args, user, userStats){
         gardenFunctions.fixDefaultGarden(user);
 
         if (!args[0]) return message.channel.send("**correct usage: **\n" + this.usage);
