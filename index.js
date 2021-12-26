@@ -1,7 +1,6 @@
 const Discord = require('discord.js');
 const keepAlive = require('./server');
 const mongoose = require('mongoose');
-const databaseTest = require('./dbtest.js');
 const functions = require('./functions.js');
 const timerFunctions = require('./timerFunctions.js');
 const fs = require('fs');
@@ -38,7 +37,23 @@ keepAlive();
 
 timerFunctions.runTimer(client);
 
-databaseTest.database();
+mongoose
+    .connect(
+        process.env['DBTOKEN'],
+        {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            useFindAndModify: false
+        }
+    )
+    .then(() => {
+        console.log('located the juice');
+        //monitor()
+        
+    })
+    .catch(err => {
+        console.log(err);
+    });
 
 //client.on('debug', console.log);
 client.on('rateLimit', info => {

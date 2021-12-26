@@ -76,7 +76,7 @@ module.exports = {
             if (!itemData.cantBuy && !itemData.fish) discount *= 0.8;
             if (itemData.sellScale) discount *= itemData.sellScale;
 
-            let value = itemData.price * amount * discount;
+            let value = Math.floor(itemData.price * amount * discount);
             user.flarins += value;
 
             functions.removeThingFromUser(itemArray, item.name, amount)

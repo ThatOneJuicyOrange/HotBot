@@ -121,7 +121,7 @@ var spawnButterfly = exports.spawnButterfly = async (client, channel) => {
         let user = await functions.getUser( i.user.id, i.guildId);
         if (!user) return console.error("couldnt find profile for butterfly catch");      
                 
-        let rewards = functions.chooseButterflyRewards(client,user,true)
+        let rewards = await functions.chooseButterflyRewards(client,user,true)
 
         let rewardString = "";
         for (item of rewards.itemRewards) {
@@ -129,9 +129,9 @@ var spawnButterfly = exports.spawnButterfly = async (client, channel) => {
             if (emoji == '❌') emoji = '';
             rewardString += `${emoji}${item.name} **x${item.count}**\n`;
         }
-        if (rewards.flarinReward > 0) { 
-            let flarinEmoji = functions.getEmojiFromName(client, "flarin");
-            rewardString += `${rewards.flarinReward}${flarinEmoji}\n`;
+        if (rewards.dustReward > 0) { 
+            let emoji = functions.getEmojiFromName(client, "ButterflyDust");
+            rewardString += `${emoji}Butterfly Dust **x${rewards.dustReward}**\n`;
         }
         user.stats.butterfliesCaught++;
         const embed = new MessageEmbed()
