@@ -16,7 +16,7 @@ module.exports = {
             for (let i = 0; i < user.eggs.length; i++) {
                 const egg = user.eggs[i];
                 const eggFile = client.creatures.get(egg.name);
-                const eggImage = new Discord.MessageAttachment(`./assets/creatures/images/${eggFile.name}Egg.png`, 'egg.png');
+                const eggImage = new MessageAttachment(`./assets/creatures/${eggFile.name}Egg.png`, 'egg.png');
 
                 const speedScale = 1 - (userStats.eggHatchSpeed - 1);
                 const hatchTime = new Date((egg.hatchTime - ((new Date).getTime() - egg.obtained.getTime())) * speedScale).toCountdown();
@@ -51,7 +51,7 @@ module.exports = {
                 if (userStats.eggSlots < i) break;
                 context.drawImage(nestBack, offsets[i].x, offsets[i].y, 42, 28);
                 if (user.eggs[i]) {
-                    var eggTex = await Canvas.loadImage(`./assets/creatures/images/${user.eggs[i].name}Egg.png`);
+                    var eggTex = await Canvas.loadImage(`./assets/creatures/${user.eggs[i].name}Egg.png`);
                     context.drawImage(eggTex,
                         0, 0, 
                         eggTex.naturalWidth, eggTex.naturalHeight - 4, 
