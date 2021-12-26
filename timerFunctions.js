@@ -205,6 +205,7 @@ async function updateGarden(client, user) {
 
         // update
         await gardenFunctions.updatePlantWater(client, user, plant);   
+        if (plant.name == "none") continue; // if it dies
 
         if (gardenFunctions.calculateWaterPercent(plant,userStats, plantData) == 0 && !plant.sentWaterNotif) {
             plant.sentWaterNotif = true;
@@ -215,7 +216,6 @@ async function updateGarden(client, user) {
             grownAlert = true;
         }
     }
-    console.log(waterAlert);
     if (waterAlert && !waterAlertedAlready && user.settings.notifs && user.settings.waterNotifs) functions.sendAlert(client, `<@!${user.userID}>! your plants are dehydrated!`, user.guildID) 
     if (grownAlert && !grownAlertedAlready && user.settings.notifs && user.settings.growthNotifs) functions.sendAlert(client, `<@!${user.userID}>! your plants are grown!`, user.guildID) 
 }
