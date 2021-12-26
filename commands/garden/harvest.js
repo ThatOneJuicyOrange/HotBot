@@ -1,6 +1,7 @@
 const creatureUserModel = require('../../models/creatureUserSchema');
 const functions = require('../../functions.js')
 const gardenFunctions = require('../../gardenFunctions.js')
+const { MessageCollector } = require('discord.js');
 
 module.exports = {
     name: 'harvest',
@@ -22,7 +23,7 @@ module.exports = {
         let growthMultiplier = 1 - (userStats.gardenGrowthRate - 1);
         if ((Date.now() - plant.planted - plant.timeUnwatered) * growthMultiplier < plantData.growTime) {
             const filter = m => m.author.id == message.author.id;
-            const collector = new Discord.MessageCollector(message.channel, filter, {
+            const collector = new MessageCollector(message.channel, filter, {
                 max: 1,
                 time: 15 * 1000, // 15s
             });

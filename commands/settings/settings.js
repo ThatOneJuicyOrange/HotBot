@@ -3,7 +3,11 @@ const { MessageEmbed,MessageButton, MessageActionRow, MessageSelectMenu  } = req
 const functions = require('../../functions.js')
 
 let settingsMap = new Map();
+settingsMap.set("notifs", {display: "Notifications", description: "Toggle HotBot sending any notifications"})
 settingsMap.set("eggNotifs", {display: "Egg Notifications", description: "Toggle HotBot alerting you when one of your egg hatches"})
+settingsMap.set("waterNotifs", {display: "Dehydration Notifications", description: "Toggle HotBot alerting you when your plants are dehydrated"})
+settingsMap.set("witherNotifs", {display: "Wither Notifications", description: "Toggle HotBot alerting you when one of your plants withers"})
+settingsMap.set("growthNotifs", {display: "Growth Notifications", description: "Toggle HotBot alerting you when one of your plants grows"})
 settingsMap.set("nightNotifs", {display: "Night Notifications", description: "Toggle whether HotBot alerts you at night time"})
 
 module.exports = {

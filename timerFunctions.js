@@ -40,7 +40,7 @@ exports.runTimer = async (client) => {
                 await clearOldBrews(client, user);
                 // every minute
                 if (seconds % 60 == 0) {
-                    await updateGardenWater(client, user);
+                    await updateGarden(client, user);
                 }
                 // every 5 minutes
                 if (seconds % 300 == 0) {
@@ -189,12 +189,35 @@ function clearOldBrews(client, user) {
 
 // garden
 
-async function updateGardenWater(client, user) {
+async function updateGarden(client, user) {
+    let waterAlertedAlready = false;
+    let waterAlert = false;
+    let grownAlertedAlready = false;
+    let grownAlert = false;
+    const userStats = await functions.getUserStats(client, user.userID, user.guildID);
     for (const plant of user.garden.plants) {
-    //for (let i = 0; i < user.garden.plants.length; i++) {
         if (plant.name == "none") continue;
-        await gardenFunctions.updatePlantWater(client, user, plant);       
+        let plantData = client.plants.get(plant.name);
+
+        // dont send notif if already sent before
+        if (plant.sentWaterNotif) waterAlertedAlready = true; 
+        if (plant.sentWaterNotif) grownAlertedAlready = true; 
+
+        // update
+        await gardenFunctions.updatePlantWater(client, user, plant);   
+
+        if (gardenFunctions.calculateWaterPercent(plant,userStats, plantData) == 0 && !plant.sentWaterNotif) {
+            plant.sentWaterNotif = true;
+            waterAlert = true;
+        }
+        if (gardenFunctions.calculateGrowthPercent(plant,userStats, plantData) == 1 && !plant.sentGrownNotif) {
+            plant.sentGrownNotif = true;
+            grownAlert = true;
+        }
     }
+    console.log(waterAlert);
+    if (waterAlert && !waterAlertedAlready && user.settings.notifs && user.settings.waterNotifs) functions.sendAlert(client, `<@!${user.userID}>! your plants are dehydrated!`, user.guildID) 
+    if (grownAlert && !grownAlertedAlready && user.settings.notifs && user.settings.growthNotifs) functions.sendAlert(client, `<@!${user.userID}>! your plants are grown!`, user.guildID) 
 }
 
 // weather

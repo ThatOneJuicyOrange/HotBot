@@ -21,6 +21,7 @@ module.exports = {
         await gardenFunctions.updatePlantWater(client, user, plant);
 
         plant.lastWatered = new Date();
+        plant.sentWaterNotif = false;
 
         user.save();    
 
