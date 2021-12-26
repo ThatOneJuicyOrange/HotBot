@@ -71,7 +71,7 @@ module.exports = {
                 //color:#331818
                 // CHESTS
                 let chest;
-                if (Math.random() < userStats.chestChance) chest = fishFunctions.chooseChestRewards(client, user, true);
+                if (Math.random() < userStats.chestChance) chest = await fishFunctions.chooseChestRewards(client, user, true);
                 // manage chest rewards
 
                 let chestString = "";

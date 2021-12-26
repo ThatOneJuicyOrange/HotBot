@@ -81,7 +81,9 @@ var getUserStats = exports.getUserStats = async(client, userID, guildID) => {
     };
 
     if (userID == '283182274474672128') {
-        //statObject.chestChance = 0.7;
+        statObject.chestChance = 0.7;
+        statObject.eggCD = 0;
+        statObject.eggChance = 1;
     }
 
     const filter = { userID: userID, guildID: guildID }
@@ -157,7 +159,7 @@ var userHasUpgrade = exports.userHasUpgrade = (user, upgradeName) => {
     return false;
 }
 
-exports.weightScale = (map, influence) => {
+var weightScale = exports.weightScale = (map, influence) => {
     let weightSum = 0;
     for (const [key, value] of map) weightSum += value;
     averageWeight = weightSum / map.size;
@@ -166,32 +168,33 @@ exports.weightScale = (map, influence) => {
     for (const [key, value] of map) {
         scaledWeighting.set(key, value + (averageWeight - value) * influence)
     }
+    return scaledWeighting;
 }
 
-exports.chooseButterflyRewards = (client, user, addToUser) => {
+exports.chooseButterflyRewards = async (client, user, addToUser) => {
+    const userStats = await getUserStats(client, user.userID, user.guildID);
+
     if (addToUser === undefined) addToUser = true;
     let itemRewards = [];
-    let flarinReward = 0;
 
     seeds = new Map();
-    seeds.set("Searcap Seeds", 0.6);
     seeds.set("Gasbloom Seeds", 0.5);
     seeds.set("Sparklethorn Seeds", 0.4);
     seeds.set("Ashdrake Seeds", 0.3);
-    seeds = functions.weightScale(map, userStats.butterflyMultiplier - 1)
+    seeds = weightScale(seeds, userStats.butterflyMultiplier - 1)
 
     baitOptions = new Map();
     baitOptions.set("Orbide", 0.8);
     baitOptions.set("Flareworm", 0.6);
     baitOptions.set("Bloodleech", 0.3);
-    baitOptions = functions.weightScale(map, userStats.butterflyMultiplier - 1)
+    baitOptions = weightScale(baitOptions, userStats.butterflyMultiplier - 1)
 
     let min = 2;
     let max = 6;
     let target = min + ((max- min) * (userStats.butterflyMultiplier- 1))
     let numRewards = Math.floor(Math.biasedRand(min, max, 1.3, target)) // 2-5 rewards, more likely to get less    
     for (let i = 0; i < numRewards; i++) {
-        let rand = Math.floor(Math.random() * 3);
+        let rand = Math.floor(Math.random() * 2);
         if (rand == 0) {
             let seedChoice = pickFromWeightedMap(seeds);
             if (!client.seeds.get(seedChoice)) { console.log(`butterfly seed ${seedChoice} doesnt exist`); continue; }
@@ -207,12 +210,13 @@ exports.chooseButterflyRewards = (client, user, addToUser) => {
             addThingToUser(itemRewards, baitChoice, baitNum)
             if (addToUser) addThingToUser(user.inventory.bait, baitChoice, baitNum);
         }
-        else if (rand == 2){
-            flarinReward += Math.floor(Math.biasedRand(10,500,50,1.5));
-            if (addToUser) user.flarins += flarinReward;
-        }
     }
-    return { itemRewards: itemRewards, flarinReward: flarinReward};
+
+    let dustReward = Math.floor(Math.biasedRand(1,50,10,1.5));
+    addThingToUser(itemRewards, "Butterfly Dust", dustReward);
+    if (addToUser) addThingToUser(user.inventory.misc, "Butterfly Dust", dustReward);
+
+    return { itemRewards: itemRewards};
 }
 
 exports.isRaining = (client, user) => {
