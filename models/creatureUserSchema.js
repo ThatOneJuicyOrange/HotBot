@@ -42,6 +42,7 @@ const creatureUserSchema = new mongoose.Schema({
     },
     stats: {
         totalFish: { type: Number, default: 0 },
+        totalChests: { type: Number, default: 0 },
         timesFished: { type: Number, default: 0 },
         butterfliesCaught: { type: Number, default: 0 },
         totalFlarins: { type: Number, default: 0 }

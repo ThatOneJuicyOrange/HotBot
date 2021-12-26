@@ -133,7 +133,7 @@ var spawnButterfly = exports.spawnButterfly = async (client, channel) => {
             let flarinEmoji = functions.getEmojiFromName(client, "flarin");
             rewardString += `${rewards.flarinReward}${flarinEmoji}\n`;
         }
-
+        user.stats.butterfliesCaught++;
         const embed = new MessageEmbed()
             .setColor('#69c765')
             .setTitle("you caught a butterfly!")
