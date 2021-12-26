@@ -63,6 +63,9 @@ module.exports = {
                     let emoji = functions.getEmojiFromName(client, caught);
                     caughtString += `${emoji}${caught}\n`;
                 }
+                user.stats.totalFish += caughtList.length;
+                user.stats.timesFished++;
+
                 //endcolor
                 
                 //color:#331818
@@ -82,8 +85,9 @@ module.exports = {
                         let flarinEmoji = functions.getEmojiFromName(client, "flarin");
                         chestString += `${chest.flarinReward}${flarinEmoji}\n`;
                     }
+                    user.stats.totalChests++;
                 }
-
+                
                 if (caughtString == "") caughtString = "nothing :(";
                 let bait = user.baitEquipped;
 
