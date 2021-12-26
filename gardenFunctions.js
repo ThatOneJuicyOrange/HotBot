@@ -23,7 +23,7 @@ var updatePlantWater = exports.updatePlantWater = async (client, user, plant) =>
         plant.lastUnwateredUpdate = new Date();
         if (plant.timeUnwatered > config.plantDeathTime) {
             if (user.settings.notifs && user.settings.witherNotifs) functions.sendAlert(client, `<@!${user.userID}>! your ${plant.name} has withered! :(`, user.guildID)
-            plant = { name: "none", planted: null, lastWatered: null, timeUnwatered: 0, lastUnwateredUpdate: 0 }
+            Object.assign(plant, { name: "none", planted: null, lastWatered: null, timeUnwatered: 0, lastUnwateredUpdate: 0 });
         }
     }
 }
