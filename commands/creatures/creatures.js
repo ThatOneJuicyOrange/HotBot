@@ -6,10 +6,7 @@ module.exports = {
     name: 'creatures',
     description: 'see what creatures you got',
     usage: "%PREFIX%creatures <creature>",
-    async execute(client, message, args, Discord){     
-        let user = await functions.getUser( message.author.id, message.guild.id);
-        if (!user) return message.channel.send("can't find profile");
-
+    async execute(client, message, args, user, userStats){     
         if (user.creatures.length == 0) return message.channel.send("you have no creatures");
         
         if (args[0]) {

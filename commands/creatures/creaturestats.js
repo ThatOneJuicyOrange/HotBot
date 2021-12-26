@@ -6,7 +6,7 @@ module.exports = {
     name: 'creaturestats',
     description: 'get an overview of how many creatures the server has',
     usage: "%PREFIX%creaturestats <creature>",
-    async execute(client, message, args, Discord){
+    async execute(client, message, args, user, userStats){
         // for creature specific stats
         if (args[0]) {
             // capitalise first char

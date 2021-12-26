@@ -5,7 +5,7 @@ module.exports = {
     description: 'weatherTest',
     usage: "%PREFIX%weatherTest",
     admin: true,
-    async execute(client, message, args, Discord){  
+    async execute(client, message, args, user, userStats){  
         let weather = await functions.getWeather();
         console.log(weather);
     }

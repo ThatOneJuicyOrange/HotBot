@@ -6,11 +6,7 @@ module.exports = {
     name: 'weather',
     description: 'get the current weather. useful for finding specific eggs',
     usage: "%PREFIX%weather",
-    async execute(client, message, args, Discord){
-        const filter = { userID: message.author.id, guildID: message.guild.id }
-        let user = await creatureUserModel.findOne(filter);
-        if (!user) return message.channel.send("error getting profile :(");
-
+    async execute(client, message, args, user, userStats){
         let weather = await functions.getWeather(client);
         const time = Date.nowWA();
         const embed = new MessageEmbed()

@@ -7,9 +7,7 @@ module.exports = {
     description: 'view your stats',
     usage:  `!stats
             "!stats detailed`,
-    async execute(client, message, args, Discord){  
-        const userStats = await f.getUserStats(client, message.author.id, message.guild.id);
-
+    async execute(client, message, args, user, userStats){  
         if (args[0] != "detailed") {
             let statList = `**egg chance:** ${f.fixFPErrors(userStats.eggChance * 100)}%\n` +
                             `**egg message cooldown:** ${userStats.eggCD}m\n`+

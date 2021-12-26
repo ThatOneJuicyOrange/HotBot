@@ -8,13 +8,8 @@ module.exports = {
     description: 'see what eggs people can get',
     usage: "%PREFIX%eggprob <test probability Y/N>",
     admin: true,
-    async execute(client, message, args, Discord){
-        let user = await functions.getUser( message.author.id, message.guild.id);
-        if (!user) return message.channel.send("can't find profile");
-
-        const userStats = await functions.getUserStats(client, user.userID, user.guildID);
-
-        if ( args[0] != "Y"){
+    async execute(client, message, args, user, userStats){
+        if (args[0] != "Y"){
             let eggs = ""
             let total = 0;
             for (const [name, creature] of client.creatures) {

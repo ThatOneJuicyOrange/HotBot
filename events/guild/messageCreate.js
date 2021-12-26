@@ -1,5 +1,6 @@
 const functions = require('../../functions.js')
 const cf = require('../../creatureFunctions.js')
+const creatureUserModel = require('../../models/creatureUserSchema');
 
 module.exports = async (Discord, client, message) => {
     let prefix = functions.getPrefix(client, message.guildId);
@@ -13,7 +14,7 @@ module.exports = async (Discord, client, message) => {
             lastMsg: 0
         });
         profile.save();
-        user = await creatureUserModel.findOne(filter);
+        user = await creatureUserModel.findOne({userID: message.author.id, guildID: message.guild.id});
     }
     const userStats = await functions.getUserStats(client, message.author.id, message.guild.id);
 
@@ -36,7 +37,7 @@ module.exports = async (Discord, client, message) => {
     if (command.admin && message.author.id != '283182274474672128' && message.author.id != '902830379629707314') return;
 
     try {
-        command.execute(client, message, args, Discord);
+        command.execute(client, message, args, user, userStats);
     }
     catch (err) {
         message.reply("error executing command. sorry lmao can't code.");

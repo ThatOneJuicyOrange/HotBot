@@ -8,7 +8,7 @@ module.exports = {
     name: 'help',
     description: 'get help!',
     usage: `%PREFIX%help <command>`,
-    execute(client, message, args, Discord) {
+    execute(client, message, args, user, userStats) {
         let prefix = functions.getPrefix(client, message.guildId);
 
         if (args[0]) {
