@@ -1,5 +1,5 @@
 const creatureUserModel = require('../../models/creatureUserSchema');
-const { MessageEmbed } = require('discord.js');
+const { MessageEmbed, MessageAttachment } = require('discord.js');
 const functions = require('../../functions.js')
 
 module.exports = {
@@ -17,7 +17,7 @@ module.exports = {
             if (!creature) return message.channel.send("you dont own that creature");
 
             const creatureFile = client.creatures.get(creature.name);
-            const creatureImage = new Discord.MessageAttachment(`./assets/creatures/images/${creatureFile.name}.png`, 'creature.png');
+            const creatureImage = new MessageAttachment(`./assets/creatures/${creatureFile.name}.png`, 'creature.png');
 
             const embed = new MessageEmbed()
                 .setColor('#f0c862')
