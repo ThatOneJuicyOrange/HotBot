@@ -79,7 +79,7 @@ var calculateWeight = exports.calculateWeight = (client, user, creature, userSta
     return creature.weight(client, user) * weight
 }
 
-exports.chooseEgg = async (client, message, user) => {
+var chooseEgg = exports.chooseEgg = async (client, message, user) => {
     const userStats = await functions.getUserStats(client, user.userID, user.guildID);
 
     let weightSum = 0.0;
