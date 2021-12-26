@@ -20,7 +20,7 @@ module.exports = {
             if (!creature) return message.channel.send("you dont own that creature");
 
             const creatureFile = client.creatures.get(creature.name);
-            const creatureImage = new Discord.MessageAttachment(`./creatures/images/${creatureFile.name}.png`, 'creature.png');
+            const creatureImage = new Discord.MessageAttachment(`./assets/creatures/images/${creatureFile.name}.png`, 'creature.png');
 
             const embed = new MessageEmbed()
                 .setColor('#f0c862')
