@@ -62,7 +62,7 @@ module.exports = {
             if (total == 0) return message.channel.send("no one has found this creature yet")
 
             const creatureFile = client.creatures.get(args[0]);
-            const creatureImage = new Discord.MessageAttachment(`./creatures/images/${creatureFile.name}.png`, 'creature.png');
+            const creatureImage = new Discord.MessageAttachment(`./assets/creatures/images/${creatureFile.name}.png`, 'creature.png');
 
             args[0] = args[0].toLowerCase();
             if (creatures == "") creatures = "nothing";
