@@ -9,38 +9,39 @@ const functions = require('../../functions.js')
 const plantLightMap = new Map();
 // perhaps make images with dots where the light sources should be
 plantLightMap.set("Chardaisy", [
-    {X: 17, Y: 37, strength: 10},
-    {X: 29, Y: 31, strength: 10},
-    {X: 41, Y: 25, strength: 10},
-    {X: 53, Y: 19, strength: 10},
-    {X: 29, Y: 43, strength: 10},
-    {X: 41, Y: 37, strength: 10},
-    {X: 53, Y: 31, strength: 10},
-    {X: 65, Y: 25, strength: 10},
+    { X: 17, Y: 37, strength: 10 },
+    { X: 29, Y: 31, strength: 10 },
+    { X: 41, Y: 25, strength: 10 },
+    { X: 53, Y: 19, strength: 10 },
+    { X: 29, Y: 43, strength: 10 },
+    { X: 41, Y: 37, strength: 10 },
+    { X: 53, Y: 31, strength: 10 },
+    { X: 65, Y: 25, strength: 10 },
 ])
 plantLightMap.set("Ashdrake", [
-    {X: 27, Y: 35, strength: 20},
-    {X: 45, Y: 19, strength: 20},
-    {X: 63, Y: 13, strength: 20}
+    { X: 27, Y: 35, strength: 20 },
+    { X: 45, Y: 19, strength: 20 },
+    { X: 63, Y: 13, strength: 20 }
 ])
 plantLightMap.set("Coalsprout", [
-    {X: 23, Y: 33, strength: 30},
-    {X: 52, Y: 19, strength: 30}
+    { X: 23, Y: 33, strength: 30 },
+    { X: 52, Y: 19, strength: 30 }
 ])
 plantLightMap.set("Sparklethorn", [
-    {X: 29, Y: 24, strength: 30},
-    {X: 51, Y: 13, strength: 30}
+    { X: 29, Y: 24, strength: 30 },
+    { X: 51, Y: 13, strength: 30 }
 ])
 plantLightMap.set("Starlight Spud", [
-    {X: 26, Y: 44, strength: 20},
-    {X: 43, Y: 37, strength: 30},
-    {X: 59, Y: 28, strength: 30}
+    { X: 26, Y: 44, strength: 20 },
+    { X: 43, Y: 37, strength: 30 },
+    { X: 59, Y: 28, strength: 30 }
 ])
 module.exports = {
     name: 'garden',
     description: 'view garden',
     usage: `%PREFIX%garden\n`
-        + `%PREFIX%garden details`,
+        + `%PREFIX%garden details`
+        + `%PREFIX%garden fence <fence>`,
     async execute(client, message, args, user, userStats) {
         gardenFunctions.fixDefaultGarden(user);
 
@@ -73,7 +74,7 @@ module.exports = {
                 let upgradeData = client.upgrades.get(upgrade.name);
                 if (!upgradeData) { console.log(`couldnt find ${upgrade.name} data`); continue; }
                 upgradeList += `**${upgradeData.name}** x${upgrade.count}\n`
-                            + `❓${upgradeData.effect}\n`
+                    + `❓${upgradeData.effect}\n`
             }
 
             const embed = new MessageEmbed()
@@ -94,7 +95,7 @@ module.exports = {
             for (const decoration of user.inventory.decorations)
                 if (decoration.name == fenceName) fence = decoration.name;
             if (!fence) return message.channel.send("you dont have that")
-            let fenceData = functions.getItem(client,fence)
+            let fenceData = functions.getItem(client, fence)
             if (!fenceData || fenceData.decorType != "fence") return message.channel.send("thats not a fence")
 
             user.garden.fence = fenceName;
@@ -123,13 +124,13 @@ module.exports = {
             for (let layer = 0; layer < 3; layer++) {
                 // LIGHTING
                 if (layer == 1) {
-                    let date =  Date.nowWA();
+                    let date = Date.nowWA();
                     let timeFraction = date.getHours() + (date.getMinutes() / 60);
                     let darkness = 0;
-                    if (date.betweenHours(20,6)) darkness = 0.6;
-                    else if (date.betweenHours(6,8)) darkness = 1 - (((timeFraction - 6) / 2) * 0.6)
-                    else if (date.betweenHours(18,20)) darkness = ((timeFraction - 18) / 2) * 0.6
-                    
+                    if (date.betweenHours(20, 6)) darkness = 0.6;
+                    else if (date.betweenHours(6, 8)) darkness = 1 - (((timeFraction - 6) / 2) * 0.6)
+                    else if (date.betweenHours(18, 20)) darkness = ((timeFraction - 18) / 2) * 0.6
+
                     context.globalAlpha = darkness;
                     context.globalCompositeOperation = "source-atop";
                     context.drawImage(getDarkMask(canvas, lightSources), 0, 0, canvas.width, canvas.height)
@@ -148,7 +149,7 @@ module.exports = {
                         let lightData = plantLightMap.get(plant.name);
                         if (lightData) {
                             for (const light of lightData)
-                                lightSources.push({X: light.X + plotX, Y: light.Y + plotY - 14, strength: light.strength})
+                                lightSources.push({ X: light.X + plotX, Y: light.Y + plotY - 14, strength: light.strength })
                         }
                         // plant
                         if (plantData) {
@@ -197,9 +198,9 @@ function getDarkMask(masterCanvas, lightSources) {
     const canvas = Canvas.createCanvas(masterCanvas.width, masterCanvas.height);
     const context = canvas.getContext('2d');
 
-    for (const light of lightSources) 
+    for (const light of lightSources)
         drawLight(context, light.X, light.Y, Math.ceil(0.2 * light.strength), light.strength);
-    
+
     //drawLight(context, 30, 60, 5, 60);
     //drawLight(context, 90, 70, 5, 60);
     //drawLight(context, 50, 150, 5, 60);
