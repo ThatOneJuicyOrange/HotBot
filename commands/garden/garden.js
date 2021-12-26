@@ -16,9 +16,6 @@ module.exports = {
 
         user.save();
 
-        let growthMultiplier = 1 - (userStats.gardenGrowthRate - 1);
-        let waterMultiplier = 1 + (1 -userStats.gardenWaterNeed);
-
         if (args[0] == "details") {
             let plantList = "";
             for(let i = 0; i < userStats.gardenPlots; i++) {
@@ -27,8 +24,8 @@ module.exports = {
                 let t = "`";
                 plantList += `${t}plot ${i + 1}: ${plant.name}${t}\n`
                 if (plantData) {
-                    waterLevel = Math.clamp(1 - ((Date.now() - plant.lastWatered.getTime()) / (plantData.waterRate * waterMultiplier)),0, 1)
-                    let grownMs = ((plantData.growTime - (Date.now() - plant.planted)) + plant.timeUnwatered) * growthMultiplier;
+                    let waterLevel = gardenFunctions.calculateWaterPercent(plant, userStats, plantData);
+                    let grownMs = plantData.growTime - (plantData.growTime * gardenFunctions.calculateGrowthPercent(plant, userStats, plantData));
                     let grownTime = new Date(grownMs).toCountdown();
                     if (grownMs < 0) grownTime = "grown!";
 
@@ -61,7 +58,7 @@ module.exports = {
             const context = canvas.getContext('2d');
             const garden = await Canvas.loadImage('./assets/garden/GardenBase.png');
             const plot = await Canvas.loadImage('./assets/garden/Plot.png');
-            const bars = await Canvas.loadImage('./assets/g arden/Bars.png');
+            const bars = await Canvas.loadImage('./assets/garden/Bars.png');
 
             context.drawImage(garden, 0, 0, canvas.width, canvas.height);
             for (let layer = 0; layer < 3; layer++) {
@@ -89,17 +86,15 @@ module.exports = {
                         let barLocX = 8;
                         let barLocY = 38;
 
-                        waterLevel = 1 - ((Date.now() - plant.lastWatered.getTime()) / (plantData.waterRate * waterMultiplier))
-
                         // bars
                         context.drawImage(bars, plotX + barLocX, plotY + barLocY, 24, 14);
                         // water
                         context.fillStyle = '#639bff';
-                        let waterBarSize = Math.clamp(20 * waterLevel, 0, 20);
+                        let waterBarSize = Math.clamp(20 * gardenFunctions.calculateWaterPercent(plant, userStats, plantData), 0, 20);
                         context.fillRect(plotX + barLocX + 2, plotY + barLocY + 2, waterBarSize, 4);
                         // growth
                         context.fillStyle = '#99e550';
-                        let growthBarSize = Math.clamp(20 * ((((Date.now() - plant.planted) - plant.timeUnwatered) * growthMultiplier) / plantData.growTime),0, 20);
+                        let growthBarSize = Math.clamp(20 * gardenFunctions.calculateGrowthPercent(plant, userStats, plantData),0, 20);
                         context.fillRect(plotX + barLocX + 2, plotY + barLocY + 8, growthBarSize, 4);
                     }
 

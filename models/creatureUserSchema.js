@@ -28,7 +28,11 @@ const creatureUserSchema = new mongoose.Schema({
     baitEquipped: String,
     brew: { started: Date, steps: [String] },
     settings: {
-        eggNotifs: { type: Boolean, default: false },
+        notifs: { type: Boolean, default: false },
+        eggNotifs: { type: Boolean, default: true },
+        waterNotifs: { type: Boolean, default: true },
+        witherNotifs: { type: Boolean, default: true },
+        growthNotifs: { type: Boolean, default: true },
         nightNotifs: { type: Boolean, default: true }
     },
     garden: {
@@ -37,7 +41,9 @@ const creatureUserSchema = new mongoose.Schema({
             planted: Date,
             lastWatered: Date,
             timeUnwatered: Number,
-            lastUnwateredUpdate: Date
+            lastUnwateredUpdate: Date,
+            sentWaterNotif: Boolean,
+            sentGrownNotif: Boolean,
         }]
     },
     stats: {

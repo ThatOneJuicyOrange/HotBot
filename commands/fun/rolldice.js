@@ -1,3 +1,5 @@
+const { MessageCollector } = require('discord.js');
+
 module.exports = {
     name: 'rolldice',
     description: 'roll a dice. default is 6',
@@ -61,7 +63,7 @@ module.exports = {
         if (sides > 1000) {
             const filter = m => m.author.id == message.author.id;
 
-            const collector = new Discord.MessageCollector(message.channel, filter, {
+            const collector = new MessageCollector(message.channel, filter, {
                 max: 1,
                 time: 15 * 1000, // 15s
             });

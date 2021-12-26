@@ -81,9 +81,9 @@ var getUserStats = exports.getUserStats = async(client, userID, guildID) => {
     };
 
     if (userID == '283182274474672128') {
-        statObject.chestChance = 0.7;
+        /*statObject.chestChance = 0.7;
         statObject.eggCD = 0;
-        statObject.eggChance = 1;
+        statObject.eggChance = 1;*/
     }
 
     const filter = { userID: userID, guildID: guildID }

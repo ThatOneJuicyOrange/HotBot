@@ -6,6 +6,7 @@ module.exports = async (Discord, client, message) => {
     let prefix = functions.getPrefix(client, message.guildId);
 
     // find user - create if doesnt exist
+    // NOTE- may be bad fetching from db every time, perhaps change to when the prefix is detected or when egg roll is needed
     let user = await functions.getUser(message.author.id, message.guild.id)
     if (!user) {
         let profile = await creatureUserModel.create({

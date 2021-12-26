@@ -219,16 +219,3 @@ async function stringCollector(channel, setting, userID, guild) {
         settingsMsg.delete();
     }); 
 }
-/*
-const collector = new Discord.MessageCollector(message.channel, filter, {
-                max: 1,
-                time: 15 * 1000, // 15s
-            });
-            message.channel.send(`your ${plant.name} in plot ${plot + 1} is not ready to be harvested, are you sure?`);
-            
-            const yessir = ["yes", "yeah", "ye", "yea", "y"];
-
-            collector.on("collect", m => {
-                if (yessir.includes(m.content.toLowerCase())) harvestPlant(message, user,plantData, plot, false);    
-            });
-            */

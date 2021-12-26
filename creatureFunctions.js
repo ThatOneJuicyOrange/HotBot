@@ -4,57 +4,35 @@ const creatureUserModel = require('./models/creatureUserSchema');
 const guildSettingsModel = require('./models/guildSettingsSchema');
 const functions = require("./functions.js");
 
-let eggCD = []; // reset every 30 seconds, so we dont have to fetch from DB as much
-const clearEggCD = () => {
-    eggCD = [];
-    setTimeout(clearEggCD, 1000 * 30);
-};
-clearEggCD();
-
 exports.checkEgg = async (client, user, userStats, message) => {
     try {
-        if (!eggCD.includes(message.author.id)) {
-            const lastMsg = new Date(user.lastMsg).getTime();
-            const diff = Math.abs(new Date().getTime() - lastMsg);
-            const diffMinutes = diff / (1000 * 60);
+        const minsSinceRoll = (Date.now() - user.lastMsg.getTime()) / (1000 * 60); 
+        if (minsSinceRoll <= userStats.eggCD) return
 
-            //console.log("been " + (diff / 1000) + " seconds since " + message.author.username + " sent the message to get egg");
+        // set last roll date
+        await creatureUserModel.findOneAndUpdate({userID: user.userID, guildID: user.guildID}, { lastMsg: new Date().getTime() }, { upsert: true });
 
-            if (diffMinutes <= userStats.eggCD) {
-                eggCD.push(message.author.id); // adds to cache
-                //console.log("timer not done, adding to cache");
-            }
-            else {
-                // set last message
-                await creatureUserModel.findOneAndUpdate({userID: user.userID, guildID: user.guildID}, { lastMsg: new Date().getTime() }, { upsert: true });
+        const eggChance = userStats.eggChance;
 
-                const eggChance = userStats.eggChance;
+        console.log('\x1b[36m%s\x1b[0m', `${Date.nowWA().toHM()}:`, `${functions.fixFPErrors(eggChance * 100)}% egg roll for ${message.author.username}`);
 
-                console.log(`${Date.nowWA().toHM()}: ${functions.fixFPErrors(eggChance * 100)}% egg roll for ${message.author.username}`);
+        if (Math.random() < eggChance && user.eggs.length < userStats.eggSlots) {
+            const egg = await chooseEgg(client, message, user);
+            if (egg) {
+                console.log('\x1b[36m%s\x1b[0m', `${Date.nowWA().toHM()}:`, `given ${message.author.username} a ${egg.name} egg`);
 
-                if (Math.random() < eggChance && user.eggs.length < userStats.eggSlots) {
-                    const egg = await chooseEgg(client, message, user);
-                    if (egg) {
-                        console.log(`${Date.nowWA().toHM()}: given ${message.author.username} a ${egg.name} egg`);
+                let emoji = functions.getEmojiFromName(client, egg.name + "Egg");
+                if (emoji == "❌") emoji = '🥚';
+                message.react(emoji);
 
-                        let emoji = functions.getEmojiFromName(client, egg.name + "Egg");
-                        if (emoji == "❌") emoji = '🥚';
-                        message.react(emoji);
-
-                        const eggData = { name: egg.name, obtained: new Date(), hatchTime: egg.hatchTime }
-                        // push egg
-                        await creatureUserModel.findOneAndUpdate(
-                            {userID: user.userID, guildID: user.guildID}, 
-                            {$push : {'eggs': eggData}}
-                        );
-                    } else console.log("no egg was found!");
-                }
-            }
+                const eggData = { name: egg.name, obtained: new Date(), hatchTime: egg.hatchTime }
+                // push egg
+                await creatureUserModel.findOneAndUpdate(
+                    {userID: user.userID, guildID: user.guildID}, 
+                    {$push : {'eggs': eggData}}
+                );
+            } else console.log("no egg was found!");
         }
-        else {
-            //console.log(message.author.username + " is in the cache")          
-        }
-
     }
     catch (err) {
         console.log(err);
