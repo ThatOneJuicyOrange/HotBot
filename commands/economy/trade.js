@@ -9,7 +9,7 @@ module.exports = {
     usage: "%PREFIX%trade\n"
         + "%PREFIX%trade create [user]\n"
         + "%PREFIX%trade add/remove send/request [name] [count]\n"
-        + "%PREFIX%trade accept/reject",
+        + "%PREFIX%trade accept/unaccept/reject",
     async execute(client, message, args, user, userStats) {
         let flarinEmoji = functions.getEmojiFromName(client, "flarin", '💰');
 
