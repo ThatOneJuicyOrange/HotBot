@@ -7,5 +7,5 @@
 	"artifactChance": 0.002, 
 	"brewExpiry": 1800000,
     "plantDeathTime": 259200000,
-    "gobbyTraderDay": 1
+    "gobbyTraderDay": 3
 }
