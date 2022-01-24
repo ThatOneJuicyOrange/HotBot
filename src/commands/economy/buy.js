@@ -54,7 +54,7 @@ module.exports = {
             functions.addThingToUser(user.inventory.decorations, item.name, amount);
         }
         else {
-            console.log(`${item.type} buy action not defined`);
+            console.logger.warn(`${item.type} buy action not defined`);
             return message.channel.send("sorry, orange code™");
         }
         user.flarins -= totalPrice;

@@ -26,7 +26,7 @@ module.exports = {
             let totalFlarinsMap = new Map();
             
             await creatureUserModel.find({}, (err, users) => {
-                if (err) console.log(err);
+                if (err) console.logger.error(err);
         
                 users.map(user => {
                     if (user.guildID == message.guild.id) {
@@ -122,7 +122,7 @@ async function creatureBoard(client, message) {
 async function creatureBoardSpecific(client, message, creatureName) {
     let userMap = new Map();
     await creatureUserModel.find({}, (err, users) => {
-        if (err) console.log(err);
+        if (err) console.logger.error(err);
 
         users.map(user => {
             if (user.creatures.length > 0 && user.guildID == message.guild.id) {

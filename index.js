@@ -13,6 +13,21 @@ require('dotenv').config() // remove in replit..?
 const Canvas = require('canvas');
 Canvas.registerFont('./src/fonts/Notalot60.ttf', { family: 'Notalot60' });
 
+// logging
+var log4js = require("log4js");
+log4js.configure({
+    appenders: {
+        fileAppender: { type: 'file', filename: './logs/console.log' },
+        consoleAppender: { type: 'console' }
+    },
+    categories: { default: { appenders: ['fileAppender', 'consoleAppender'], level: 'all' } }
+});
+console.logger = log4js.getLogger(); // probs trash
+fs.appendFile('./logs/console.log', "\n\n\n", (err) => { if (err) throw err; });
+console.logger.info("started logger")
+
+// define bot client
+
 const client = new Discord.Client({
     partials: ['MESSAGE', 'CHANNEL', 'REACTION'],
     intents: [
@@ -36,8 +51,10 @@ const handlers = fs.readdirSync('./src/handlers').filter(file => file.endsWith('
 for (handler of handlers)
     require(`./src/handlers/${handler}`)(client, Discord);
 
+// for uptime robot
 keepAlive();
 
+// run all timers
 timerFunctions.runTimer(client);
 
 mongoose
@@ -51,18 +68,15 @@ mongoose
     )
     .then(() => {
         console.log('located the juice');
-        //monitor()
-        
     })
     .catch(err => {
-        console.log(err);
+        console.logger.error(err);
     });
 
 //client.on('debug', console.log);
 client.on('rateLimit', info => {
     console.log(
-        `Rate limit hit ${
-        info.timeDifference
+        `Rate limit hit ${info.timeDifference
             ? info.timeDifference
             : info.timeout
                 ? info.timeout

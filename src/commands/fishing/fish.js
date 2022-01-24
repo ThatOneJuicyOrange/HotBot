@@ -48,7 +48,7 @@ module.exports = {
                     let bonus = Math.random() < userStats.bonusFishChance ? 2 : 1;
                     for (let i = 0; i < bonus; i++) {           
                         const fish = fishFunctions.chooseFish(client, userStats.rareFishScale);
-                        if (!fish) return console.log("error getting fish");
+                        if (!fish) return console.logger.warn("error getting fish");
 
                         functions.addThingToUser(user.inventory.fish, fish.name, 1);
                         caughtList.push(fish.name);
@@ -73,7 +73,6 @@ module.exports = {
                 let chestString = "";
                 if (chest) {
                     for (chestReward of chest.chestRewards) {
-                        console.log(chestReward.name);
                         let emoji = functions.getEmojiFromName(client, chestReward.name,'');
                         chestString += `${emoji}${chestReward.name} **x${chestReward.count}**\n`;
                     }

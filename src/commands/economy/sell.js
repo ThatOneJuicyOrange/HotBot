@@ -24,7 +24,7 @@ module.exports = {
             if (user.inventory.fish.length == 0) return message.channel.send("you are fishless");
             for (fish of user.inventory.fish) {
                 let fishData = client.fish.get(fish.name);
-                if (!fishData) return console.log("error getting fish");
+                if (!fishData) return console.logger.warn("error getting fish");
                 total += fishData.price * fish.count;
             }
             user.inventory.fish = [];
@@ -64,7 +64,7 @@ module.exports = {
 
             let itemData = client.fish.get(item.name);
             if (!itemData) itemData = functions.getItem(client, itemName);
-            if (!itemData) return console.log("error getting item");
+            if (!itemData) return console.logger.warn("error getting item");
 
             let discount = 1;
             if (!itemData.cantBuy && !itemData.fish) discount *= 0.8;

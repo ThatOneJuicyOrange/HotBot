@@ -17,10 +17,10 @@ module.exports = {
         if (plant.name == "none") return message.channel.send(`plot ${plot + 1} is empty :(`)
 
         let plantData = client.plants.get(plant.name);
-        if (!plantData) return console.log("couldnt find " + plant.name);
+        if (!plantData) return console.logger.warn("couldnt find " + plant.name);
 
         if (gardenFunctions.calculateGrowthPercent(plant, userStats, plantData) < 1) {
-            const filter = m => m.author.id == message.author.id;
+            const filter = m => m.author.id == message.author.id && m.channelId == message.channelId;
             const collector = new MessageCollector(message.channel, filter, {
                 max: 1,
                 time: 15 * 1000, // 15s

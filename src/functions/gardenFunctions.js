@@ -5,7 +5,7 @@ const plantSchema = require(global.src + '/models/plantSchema');
 
 var updatePlantWater = exports.updatePlantWater = async (client, user, plant) => {
     let plantData = client.plants.get(plant.name);
-    if (!plantData) return console.log(`error getting ${plant.name} data`);
+    if (!plantData) return console.logger.warn(`error getting ${plant.name} data`);
 
     const userStats = await functions.getUserStats(client, user.userID, user.guildID);
 

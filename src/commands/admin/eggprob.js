@@ -37,7 +37,7 @@ module.exports = {
                 }
             }
 
-            if (availableEggs.length == 0) { console.log("no eggs available"); return; }
+            if (availableEggs.length == 0) { console.logger.warn("no eggs available"); return; }
 
             let weightSum = 0.0;
             for (const egg of availableEggs) weightSum += cf.calculateWeight(client,user,egg,userStats);

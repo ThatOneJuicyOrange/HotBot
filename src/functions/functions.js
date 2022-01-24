@@ -216,14 +216,14 @@ exports.chooseButterflyRewards = async (client, user, addToUser) => {
         let rand = Math.floor(Math.random() * 2);
         if (rand == 0) {
             let seedChoice = pickFromWeightedMap(seeds);
-            if (!client.seeds.get(seedChoice)) { console.log(`butterfly seed ${seedChoice} doesnt exist`); continue; }
+            if (!client.seeds.get(seedChoice)) { console.logger.warn(`butterfly seed ${seedChoice} doesnt exist`); continue; }
 
             addThingToUser(itemRewards, seedChoice, 1) // not adding to user, just adding to array
             if (addToUser) addThingToUser(user.inventory.seeds, seedChoice, 1);
         }
         else if (rand == 1) {
             let baitChoice = pickFromWeightedMap(baitOptions);
-            if (!client.bait.get(baitChoice)) { console.log(`butterfly bait ${baitChoice} doesnt exist`); continue; }
+            if (!client.bait.get(baitChoice)) { console.logger.warn(`butterfly bait ${baitChoice} doesnt exist`); continue; }
             let baitNum = Math.floor(Math.biasedRand(5, 30, 15, 0.8));
 
             addThingToUser(itemRewards, baitChoice, baitNum)
@@ -310,7 +310,7 @@ exports.getEmojiFromName = (client, name, fallback) => {
 }
 
 var pickFromWeightedMap = exports.pickFromWeightedMap = (map) => {
-    if (map.size == 0) { console.log("no options available"); return; }
+    if (map.size == 0) { console.logger.warn("no options available"); return; }
 
     let weightSum = 0.0;
     for (const [key, weight] of map) weightSum += weight;
@@ -320,7 +320,7 @@ var pickFromWeightedMap = exports.pickFromWeightedMap = (map) => {
         if (rand <= weight) return key;
         rand -= weight;
     }
-    console.log('error picking weighted random option');
+    console.logger.warn('error picking weighted random option');
     return null; // should never happen lmao but you know OrangeCode™
 }
 
@@ -406,14 +406,14 @@ var removeThingFromUser = exports.removeThingFromUser = (thingArray, thingName, 
             break;
         }
     }
-    if (thingIndex == -1) return console.log(`error removing ${thingName} from user: no item exists`)
+    if (thingIndex == -1) return console.logger.warn(`error removing ${thingName} from user: no item exists`)
     if (thingArray[thingIndex].count > count) thingArray[thingIndex].count -= count;
     else thingArray.splice(thingIndex, 1);
 }
 
 var sendAlert = exports.sendAlert = async (client, alertContent, guildID, type = "alert") => {
     let channel = await getAlertChannel(client, guildID, type);
-    if (!channel) return console.log("error getting alert channel for " + guildID);
+    if (!channel) return console.logger.warn("error getting alert channel for " + guildID);
     channel.send(alertContent)
 }
 

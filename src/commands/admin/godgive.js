@@ -36,7 +36,7 @@ module.exports = {
             if (!args[2]) return message.channel.send("incorrect usage");
             let eggName = args.slice(2).join(' ').toCaps();
             const egg = client.creatures.get(eggName);
-            if (!egg) return console.log(`couldnt find ${eggName}`);
+            if (!egg) return console.logger.warn(`couldnt find ${eggName}`);
 
             const eggData = {name : eggName, obtained : new Date(), hatchTime : egg.hatchTime }
             userToGive.eggs.push(eggData);
@@ -49,7 +49,7 @@ module.exports = {
         else if (args[0] == "creature") {
             if (!args[3]) return message.channel.send("incorrect usage");
             let creatureName = args.slice(3).join(' ').toCaps();
-            if (!client.creatures.get(creatureName)) return console.log(`couldnt find ${creatureName}`);
+            if (!client.creatures.get(creatureName)) return console.logger.warn(`couldnt find ${creatureName}`);
 
             functions.addThingToUser(userToGive.creatures, creatureName, parseInt(args[2]));
 

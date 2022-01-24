@@ -16,7 +16,7 @@ module.exports = {
             // 3
             if (Date.nowWA().getDay() != config.gobbyTraderDay) return message.channel.send("the gobby trading boat isn't here!") // wed
             var trader = await client.traders.get("GobbyTrader");
-            if (!trader) return console.log("error getting gobby")
+            if (!trader) return console.logger.warn("error getting gobby")
 
             const embed = new MessageEmbed()
                 .setColor('#98db81')
@@ -26,7 +26,7 @@ module.exports = {
             let itemTexts = {};
             for (const itemName of trader.saleItems) {
                 let itemData = await functions.getItem(client, itemName)
-                if (!itemData) { console.log(`error getting ${itemName} data`); continue; }
+                if (!itemData) { console.logger.warn(`error getting ${itemName} data`); continue; }
                 if (!itemTexts[itemData.type]) itemTexts[itemData.type] = getItemText(client, itemData, itemData.type, user);
                 else itemTexts[itemData.type] += getItemText(client, itemData, itemData.type, user);
             }
@@ -131,7 +131,7 @@ function getItemText(client, itemData, shop, user) {
     else if (shop == "seeds") {
         let plantData = client.plants.get(itemData.name.replace(" Seeds", ""));
         if (!plantData) {
-            console.log(`error getting ${itemData.name} plant data`)
+            console.logger.warn(`error getting ${itemData.name} plant data`)
             return `${itemEmoji}**${itemData.name}** - **${itemData.price}**${flarinEmoji}\n`;
         }
         var itemText = `${itemEmoji}**${itemData.name}** - **${itemData.price}**${flarinEmoji}\n` +

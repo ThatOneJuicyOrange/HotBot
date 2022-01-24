@@ -13,7 +13,6 @@ module.exports = {
         
         for (const [name, c] of client.creatures) {
             let emojiName = functions.scrambleWord(c.name) + "Black";
-            //console.log(emojiName + " " + c.name);
             let creatureName = "?????";
             if (creaturesGot.includes(c.name)){
                  emojiName = c.name;
