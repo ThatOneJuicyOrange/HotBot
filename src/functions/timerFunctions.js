@@ -20,53 +20,55 @@ exports.runTimer = async (client) => {
     let repeatDelay = 20; // in seconds
     setInterval(async function () {
         seconds += repeatDelay;
+        try {
+            // every minute
+            if (seconds % 60 == 0) {
+            }
+            // every 5 minutes
+            if (seconds % 300 == 0) {
+                updateWeatherCache(client);
+            }
 
-        // every minute
-        if (seconds % 60 == 0) {
-        }
-        // every 5 minutes
-        if (seconds % 300 == 0) {
-            updateWeatherCache(client);
-        }
+            // loop through each user
+            creatureUserModel.find({}, (err, users) => {
+                if (err) console.logger.warn(err);
 
-        // loop through each user
-        creatureUserModel.find({}, (err, users) => {
-            if (err) console.log(err);
-
-            users.map(async user => {
-                // every 20 seconds
-                await checkEggHatching(client, user);
-                await clearOldBrews(client, user);
-                // every minute
-                if (seconds % 60 == 0) {
-                    await updateGarden(client, user);
-                }
-                // every 5 minutes
-                if (seconds % 300 == 0) {
-                }
-                user.save();
-            });
-        });
-        // loop through each guild
-        guildSettingsModel.find({}, (err, guilds) => {
-            if (err) console.log(err);
-
-            guilds.map(async guild => {
-                // only execute if bot is in the server
-                if (client.guilds.cache.has(guild.guildID)) {
+                users.map(async user => {
+                    // every 20 seconds
+                    await checkEggHatching(client, user);
+                    await clearOldBrews(client, user);
                     // every minute
                     if (seconds % 60 == 0) {
-                        await traderNotification(client, guild);
+                        await updateGarden(client, user);
                     }
                     // every 5 minutes
                     if (seconds % 300 == 0) {
-                        updateWeatherCache(client);
-                        await butterflyCheck(client, guild);
                     }
-                    guild.save();
-                }
+                    user.save();
+                });
             });
-        });
+            // loop through each guild
+            guildSettingsModel.find({}, (err, guilds) => {
+                if (err) console.logger.warn(err);
+
+                guilds.map(async guild => {
+                    // only execute if bot is in the server
+                    if (client.guilds.cache.has(guild.guildID)) {
+                        // every minute
+                        if (seconds % 60 == 0) {
+                            await traderNotification(client, guild);
+                        }
+                        // every 5 minutes
+                        if (seconds % 300 == 0) {
+                            updateWeatherCache(client);
+                            await butterflyCheck(client, guild);
+                        }
+                        guild.save();
+                    }
+                });
+            });
+        }
+        catch (err) { console.logger.error(err); }
     }, 1000 * repeatDelay)
 }
 // trader alerts
@@ -104,7 +106,7 @@ async function traderNotification(client, guild) {
 
 // butterflies
 async function butterflyCheck(client, guild) {
-    if (!guild) return console.log("theres no guild in butterflyCheck for some reason?");
+    if (!guild) return console.logger.warn("theres no guild in butterflyCheck for some reason?");
     if (Math.random() < 0.05) { // roughly 14 butterflies a day: (1440 / 5) * 0.05             
         let channel = await functions.getAlertChannel(client, guild.guildID, "event")
         if (channel) {
@@ -150,33 +152,36 @@ var spawnButterfly = exports.spawnButterfly = async (client, channel) => {
         time: 3 * 60 * 1000
     })
     collector.on('collect', async i => {
-        usersClicked.push(i.user.id);
+        try {
+            usersClicked.push(i.user.id);
 
-        let user = await functions.getUser(i.user.id, i.guildId);
-        if (!user) return console.error("couldnt find profile for butterfly catch");
+            let user = await functions.getUser(i.user.id, i.guildId);
+            if (!user) return console.error("couldnt find profile for butterfly catch");
 
-        let rewards = await functions.chooseButterflyRewards(client, user, true)
+            let rewards = await functions.chooseButterflyRewards(client, user, true)
 
-        let rewardString = "**Items:**\n";
-        for (item of rewards.itemRewards) {
-            let emoji = functions.getEmojiFromName(client, item.name, '');
-            rewardString += `${emoji}${item.name} **x${item.count}**\n`;
-        }
-        if (rewards.boostRewards.length != 0) rewardString += "**Boosts:**\n";
-        for (boost of rewards.boostRewards) {
-            if (boost.name != "Blessing of the Dryad")
-                rewardString += `${boost.name}\n`;
-            else
-                rewardString += `Blessing of the Dryad - all your plants have grown by 10%! \n`;
-        }
-        user.stats.butterfliesCaught++;
-        const embed = new MessageEmbed()
-            .setColor('#69c765')
-            .setTitle("you caught a butterfly!")
-            .setDescription(rewardString);
+            let rewardString = "**Items:**\n";
+            for (item of rewards.itemRewards) {
+                let emoji = functions.getEmojiFromName(client, item.name, '');
+                rewardString += `${emoji}${item.name} **x${item.count}**\n`;
+            }
+            if (rewards.boostRewards.length != 0) rewardString += "**Boosts:**\n";
+            for (boost of rewards.boostRewards) {
+                if (boost.name != "Blessing of the Dryad")
+                    rewardString += `${boost.name}\n`;
+                else
+                    rewardString += `Blessing of the Dryad - all your plants have grown by 10%! \n`;
+            }
+            user.stats.butterfliesCaught++;
+            const embed = new MessageEmbed()
+                .setColor('#69c765')
+                .setTitle("you caught a butterfly!")
+                .setDescription(rewardString);
 
-        i.reply({ embeds: [embed], ephemeral: true })
-        user.save();
+            i.reply({ embeds: [embed], ephemeral: true })
+            user.save();
+        }        
+        catch (err) { console.logger.error(err); }
     });
     collector.on('end', collected => {
         butterflyMessage.edit({ embeds: [embedFlyAway], components: [], files: [] })
@@ -203,7 +208,7 @@ async function checkEggHatching(client, user) {
             // log
             let discordMember = await client.users.cache.get(user.userID);
             let username = discordMember ? discordMember.username : user.userID;
-            console.log(`hatched ${username}'s ${egg.name} egg`);
+            console.logger.warn(`hatched ${username}'s ${egg.name} egg`);
             //logCreatureGame(`hatched ${user.userID}'s ${egg.name} egg. they now have\n`);            
         }
     }

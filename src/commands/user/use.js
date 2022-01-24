@@ -26,8 +26,8 @@ module.exports = {
             functions.removeThingFromUser(user.inventory.potions, itemToUse.name, 1);
         }
         else {
+            console.logger.warn(`error consuming ${itemData.name}`)
             return message.channel.send("idk what to do with this");
-            console.log("error consuming");
         }
         user.save();
     }

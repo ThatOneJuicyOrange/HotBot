@@ -42,6 +42,6 @@ module.exports = async (Discord, client, message) => {
     }
     catch (err) {
         message.reply("error executing command. sorry lmao can't code.");
-        console.log(err);
+        console.logger.warn(err);
     }
 }

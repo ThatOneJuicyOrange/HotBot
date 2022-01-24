@@ -25,7 +25,7 @@ module.exports = {
         .setDescription(data.toString())
 
         guildSettingsModel.find({}, (err, guilds) => {
-            if (err) console.log(err);
+            if (err) console.logger.error(err);
 
             guilds.map(async guild => {
                 // only execute if bot is in the server

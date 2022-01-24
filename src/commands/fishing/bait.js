@@ -32,7 +32,7 @@ module.exports = {
             if(bait == "none") embed.addField("current bait", `**none**`);
             else {
                 let baitData = client.bait.get(bait)
-                if (!baitData) return console.log(`error getting ${bait} data`);
+                if (!baitData) return console.logger.warn(`error getting ${bait} data`);
                 embed.addField(`${baitData.name}`, `${baitData.effect}`);
             }
             message.channel.send({ embeds: [embed] });

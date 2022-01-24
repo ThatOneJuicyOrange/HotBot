@@ -10,7 +10,7 @@ module.exports = {
         for (const boost of user.boosts) {
             let boostData = client.boosts.get(boost.name);
             if (!boostData) boostData = client.potions.get(boost.name);
-            if (!boostData) {console.log(`couldnt find ${boost.name} data`); continue;}
+            if (!boostData) {console.logger.warn(`couldnt find ${boost.name} data`); continue;}
             if (Date.now() - boost.used < boostData.duration) {
                 boostList += `**${boostData.name}**\n`
                             + `❓${boostData.effect}\n`

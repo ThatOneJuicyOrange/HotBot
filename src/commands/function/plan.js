@@ -25,10 +25,6 @@ module.exports = {
 
             let parsedDate = Date.parse(date);
 
-            console.log(date);
-            console.log(parsedDate);
-            console.log(Date.now());
-
             if (isNaN(parsedDate)) return message.channel.send("that's not a real date");
             if (Math.trunc(parsedDate / 86400000) < Math.trunc(Date.now() / 86400000)) return message.channel.send("that's before today, are you sure?");
             

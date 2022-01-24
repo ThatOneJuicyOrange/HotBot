@@ -23,7 +23,7 @@ module.exports = {
             let balanceMap = new Map();
 
             await creatureUserModel.find({} , (err, users) => {
-                if(err) console.log(err);
+                if(err) console.logger.error(err);
                 users.map(user => {
                     if (user.flarins > 0 && user.guildID == message.guild.id)
                         balanceMap.set(user.userID, user.flarins)

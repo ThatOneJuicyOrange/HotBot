@@ -81,7 +81,7 @@ module.exports = {
             for (const upgrade of user.upgrades) {
                 if (!gardenUpgrades.includes(upgrade.name)) continue;
                 let upgradeData = client.upgrades.get(upgrade.name);
-                if (!upgradeData) { console.log(`couldnt find ${upgrade.name} data`); continue; }
+                if (!upgradeData) { console.logger.warn(`couldnt find ${upgrade.name} data`); continue; }
                 upgradeList += `**${upgradeData.name}** x${upgrade.count}\n`
                     + `❓${upgradeData.effect}\n`
             }

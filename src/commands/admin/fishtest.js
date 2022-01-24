@@ -21,7 +21,7 @@ module.exports = {
                     let bonus = Math.random() < 0.7 && user.baitEquipped == "Bloodleech" ? 2 : 1;
                     for (let i = 0; i < bonus; i++) {
                         const fish = fishFunctions.chooseFish(client, user.baitEquipped == "Toxicane" ? 0.7 : 0);
-                        if (!fish) return console.log("error getting fish");
+                        if (!fish) return console.logger.warn("error getting fish");
 
                         functions.addThingToUser(user.inventory.fish, fish.name, 1);
                         caughtList.push(fish.name);

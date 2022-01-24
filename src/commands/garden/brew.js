@@ -10,14 +10,14 @@ module.exports = {
     description: 'brew a potion',
     usage: "%PREFIX%brew add <amount> <plant>\n"
         + "%PREFIX%brew heat/stir/beat/fold/mix",
-    async execute(client, message, args, user, userStats){
-        if (!functions.userHasUpgrade(user, "Cauldron")) 
+    async execute(client, message, args, user, userStats) {
+        if (!functions.userHasUpgrade(user, "Cauldron"))
             return message.channel.send("you have no cauldron to brew in! buy one from the shop")
 
         let actions = ['beat', 'stir', 'fold', 'mix']
-        let heatEmoji = ['🧊','🧊', '♨️', '♨️', '🔥', '🔥', '🏜️']
+        let heatEmoji = ['🧊', '🧊', '♨️', '♨️', '🔥', '🔥', '🏜️']
 
-        if (!args[0]){
+        if (!args[0]) {
             let stepString = "";
             let stepNum = 1;
             for (const step of user.brew.steps) {
@@ -47,7 +47,7 @@ module.exports = {
                 .addField("method", stepString, true)
                 .addField("expires", expires, true);
             return message.channel.send({ embeds: [embed] });
-        } 
+        }
         if (args[0] && !user.brew.started) user.brew.started = new Date();
 
         if (args[0] == "add") {
@@ -59,12 +59,12 @@ module.exports = {
 
             let subInv;
             let itemExists = false;
-            let itemTypes = ['fish','plants'];
+            let itemTypes = ['fish', 'plants'];
             for (const itemType of itemTypes) {
                 if (client[itemType].get(itemName)) itemExists = true;
 
                 for (const item of user.inventory[itemType]) {
-                    if (item.name == itemName){
+                    if (item.name == itemName) {
                         subInv = itemType;
                         if (item.count < args[1]) return message.channel.send(`you dont have enough ${itemName}`)
                         break;
@@ -90,10 +90,10 @@ module.exports = {
                 )
 
             let brewMsg = await message.channel.send({
-                content:"start heating your brew?", 
+                content: "start heating your brew?",
                 components: [row]
-                })
-            
+            })
+
             const filter = (i) => i.user.id === message.author.id && i.message.id === brewMsg.id;
             const collector = message.channel.createMessageComponentCollector({
                 filter,
@@ -102,42 +102,45 @@ module.exports = {
             let seconds = 0;
             let counter;
             collector.on('collect', i => {
-                if (i.customId == "start") {
-                    const row = new MessageActionRow().addComponents(
-                    new MessageButton()
-                        .setCustomId('stop')
-                        .setEmoji('🛑')
-                        .setLabel('stop heating')
-                        .setStyle('DANGER')
-                    )
+                try {
+                    if (i.customId == "start") {
+                        const row = new MessageActionRow().addComponents(
+                            new MessageButton()
+                                .setCustomId('stop')
+                                .setEmoji('🛑')
+                                .setLabel('stop heating')
+                                .setStyle('DANGER')
+                        )
 
-                    if (!counter) {
-                        counter = setInterval(function() {
-                            if (seconds % brewSpeed == 0) {
-                                let index = parseInt(seconds / brewSpeed);
-                                i.message.edit({
-                                    content:`your brew is ${heatEmoji[index]} ${heat[index]}`,
-                                    components: [row],
-                                    embeds: []
-                                })
-                            }
-                            seconds++;
-                            if (seconds > brewSpeed * (heat.length - 1)){
-                                clearInterval(counter);
-                                finishHeating(user,i.message, seconds);
-                                collector.stop();
-                            }
-                        }, 1000)
+                        if (!counter) {
+                            counter = setInterval(function () {
+                                if (seconds % brewSpeed == 0) {
+                                    let index = parseInt(seconds / brewSpeed);
+                                    i.message.edit({
+                                        content: `your brew is ${heatEmoji[index]} ${heat[index]}`,
+                                        components: [row],
+                                        embeds: []
+                                    })
+                                }
+                                seconds++;
+                                if (seconds > brewSpeed * (heat.length - 1)) {
+                                    clearInterval(counter);
+                                    finishHeating(user, i.message, seconds);
+                                    collector.stop();
+                                }
+                            }, 1000)
+                        }
                     }
+                    else if (i.customId == "stop") {
+                        if (counter) clearInterval(counter);
+                        else console.log("error stopping heating")
+                        finishHeating(user, i.message, seconds);
+                        collector.stop();
+                    }
+                    i.deferUpdate(); // stops the fail message
+                    //console.log(`Collected ${i.customId}`)
                 }
-                else if (i.customId == "stop") {
-                    if (counter) clearInterval(counter);
-                    else console.log("error stopping heating")
-                    finishHeating(user,i.message, seconds);
-                    collector.stop();
-                }
-                i.deferUpdate(); // stops the fail message
-                //console.log(`Collected ${i.customId}`)
+                catch (err) { console.logger.error(err); }
             });
         }
         else if (actions.includes(args[0])) {
@@ -150,8 +153,8 @@ module.exports = {
             else if (args[0] == 'mix') stepInfo = `you mixed the brew`
             else stepInfo = "error";
             message.channel.send(stepInfo);
-        } 
-        else if (args[0] == "complete"){
+        }
+        else if (args[0] == "complete") {
             let stepString = "";
             for (const step of user.brew.steps) {
                 if (stepString != "") stepString += "-";
@@ -168,17 +171,17 @@ module.exports = {
             user.brew.steps = [];
             user.brew.started = null;
             if (potionBrewed == "") message.channel.send("you didn't make anything :(")
-            else{
-                functions.addThingToUser(user.inventory.potions,potionBrewed, 1);
+            else {
+                functions.addThingToUser(user.inventory.potions, potionBrewed, 1);
                 message.channel.send(`you brewed 1 ${potionBrewed}`)
-            } 
+            }
         }
         else return message.channel.send("thats not a command")
         user.save()
     }
-}   
+}
 function finishHeating(user, msg, seconds) {
-    msg.edit({content: `you heated the brew until it was ${heat[parseInt(seconds / brewSpeed)]}`, components: [], embeds: []})
+    msg.edit({ content: `you heated the brew until it was ${heat[parseInt(seconds / brewSpeed)]}`, components: [], embeds: [] })
     user.brew.steps.push(heat[parseInt(seconds / brewSpeed)])
     user.save();
 }

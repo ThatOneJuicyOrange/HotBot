@@ -12,7 +12,7 @@ exports.checkEgg = async (client, user, userStats, message) => {
         const eggChance = userStats.eggChance;
 
         console.log('\x1b[36m%s\x1b[0m', `${Date.nowWA().toHM()}:`, `${functions.fixFPErrors(eggChance * 100)}% egg roll for ${message.author.username}`);
-
+        
         if (Math.random() < eggChance && user.eggs.length < userStats.eggSlots) {
             const egg = await chooseEgg(client, message, user);
             if (egg) {
@@ -27,12 +27,10 @@ exports.checkEgg = async (client, user, userStats, message) => {
                     {userID: user.userID, guildID: user.guildID}, 
                     {$push : {'eggs': eggData}}
                 );
-            } else console.log("no egg was found!");
+            } else console.logger.warn("no egg was found!");
         }
     }
-    catch (err) {
-        console.log(err);
-    }
+    catch (err) {console.logger.warn(err); }
 }
 
 var calculateWeight = exports.calculateWeight = (client, user, creature, userStats) => {
@@ -52,6 +50,6 @@ var chooseEgg = exports.chooseEgg = async (client, message, user) => {
         if (rand <= calculateWeight(client, user, creature, userStats)) return creature;
         rand -= calculateWeight(client, user, creature, userStats); // subtract the weight so the total is only the sum of remaining options
     }
-    console.log('error picking egg');
+    console.logger.warn('error picking egg');
     return null; // should never happen lmao but you know OrangeCode™
 }
