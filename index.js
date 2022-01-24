@@ -1,14 +1,17 @@
-const Discord = require('discord.js');
-const keepAlive = require('./server');
-const mongoose = require('mongoose');
-const functions = require('./functions.js');
-const timerFunctions = require('./timerFunctions.js');
-const fs = require('fs');
-const ms = require('ms');
 var path = require('path');
+global.appRoot = path.resolve(__dirname);
+global.src = global.appRoot + "/src";
+
+require('./src/extensions.js')
+const Discord = require('discord.js');
+const keepAlive = require('./src/server');
+const mongoose = require('mongoose');
+const timerFunctions = require('./src/functions/timerFunctions.js');
+const fs = require('fs');
 require('dotenv').config() // remove in replit..?
 
-global.appRoot = path.resolve(__dirname);
+const Canvas = require('canvas');
+Canvas.registerFont('./src/fonts/Notalot60.ttf', { family: 'Notalot60' });
 
 const client = new Discord.Client({
     partials: ['MESSAGE', 'CHANNEL', 'REACTION'],
@@ -29,9 +32,9 @@ client.creatures = new Discord.Collection();
 client.fish = new Discord.Collection();
 client.prefixes = new Discord.Collection();
 
-const handlers = fs.readdirSync('./handlers').filter(file => file.endsWith('.js'));
+const handlers = fs.readdirSync('./src/handlers').filter(file => file.endsWith('.js'));
 for (handler of handlers)
-    require(`./handlers/${handler}`)(client, Discord);
+    require(`./src/handlers/${handler}`)(client, Discord);
 
 keepAlive();
 
